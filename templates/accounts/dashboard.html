@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Your dashboard | BizBridge{% endblock %}
+{% block content %}
+<section class="dashboard">
+    <p class="eyebrow">Your BizBridge space</p>
+    <h1>Welcome, {{ user.first_name|default:user.username }}.</h1>
+    <p class="section-description">You're signed in as a <strong>{{ user.get_role_display }}</strong>. This is the starting point for your personalised BizBridge experience.</p>
+    <div class="dashboard-card">
+        <div><span class="feature-number">YOUR PROFILE</span><h2>{{ user.get_full_name|default:user.username }}</h2><p>{{ user.email }}</p></div>
+        <div class="profile-details">
+            <p><strong>Role</strong><span>{{ user.get_role_display }}</span></p>
+            <p><strong>Organisation</strong><span>{{ user.organization|default:"Not added yet" }}</span></p>
+            <p><strong>Location</strong><span>{{ user.location|default:"Not added yet" }}</span></p>
+        </div>
+        <p class="coming-soon">Next: complete your profile and start discovering relevant connections and opportunities.</p>
+    </div>
+</section>
+{% endblock %}
