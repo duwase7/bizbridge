@@ -17,9 +17,10 @@ The first development milestone establishes the Django project, role-aware user 
 
 1. Create and activate a Python virtual environment.
 2. Install dependencies: `pip install -r requirements.txt`
-3. Run migrations: `python manage.py migrate`
-4. Create an administrator: `python manage.py createsuperuser`
-5. Start the development server: `python manage.py runserver`
+3. Create the initial account migration: `python manage.py makemigrations accounts`
+4. Apply migrations: `python manage.py migrate`
+5. Create an administrator: `python manage.py createsuperuser`
+6. Start the development server: `python manage.py runserver`
 
 Open http://127.0.0.1:8000/.
 
