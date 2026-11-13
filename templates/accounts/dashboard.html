@@ -12,7 +12,11 @@
             <p><strong>Organisation</strong><span>{{ user.organization|default:"Not added yet" }}</span></p>
             <p><strong>Location</strong><span>{{ user.location|default:"Not added yet" }}</span></p>
         </div>
-        <p class="coming-soon">Next: complete your profile and start discovering relevant connections and opportunities.</p>
+        {% if user.bio %}
+            <p>{{ user.bio }}</p>
+        {% endif %}
+        <a class="button button-small" href="{% url 'edit_profile' %}">Edit profile</a>
+        <p class="coming-soon">Next: discover relevant business opportunities and connect with mentors and investors.</p>
     </div>
 </section>
 {% endblock %}
