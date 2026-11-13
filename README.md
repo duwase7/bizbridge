@@ -2,7 +2,7 @@
 
 **An Entrepreneurship Support and Connection Platform**
 
-BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. This first prototype milestone establishes the application foundation, public landing page, role-aware registration, login/logout and a protected user dashboard.
+BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. This prototype milestone establishes the application foundation, role-aware registration, login/logout, a protected dashboard and self-service profile editing.
 
 ## Technology
 
@@ -18,8 +18,10 @@ BizBridge is a web platform designed to help entrepreneurs discover mentors, inv
 - Account registration for Entrepreneurs, Mentors and Investors.
 - Login and logout using Django authentication.
 - Protected dashboard showing the signed-in user's role and profile details.
+- Profile editing for first name, last name, email, organisation, location and bio.
+- Profile editing does not allow users to change their account role.
 - Django admin for managing user accounts.
-- Automated tests for the landing page, registration and dashboard access.
+- Automated tests for account access, registration and profile editing.
 
 ## Setup and run locally
 
@@ -63,7 +65,7 @@ pip install -r requirements.txt
 
 ### 5. Configure environment variables (optional for local use)
 
-Copy `.env.example` to a new file named `.env`. The default settings use SQLite, so no database server is required to run the initial prototype.
+Copy `.env.example` to a new file named `.env`. The default settings use SQLite, so no database server is required to run the prototype.
 
 Keep `.env` private. Do not commit real secret keys or database passwords.
 
@@ -92,6 +94,7 @@ Open **http://127.0.0.1:8000/** in your browser.
 - Sign up: `/accounts/signup/`
 - Log in: `/accounts/login/`
 - Dashboard (requires login): `/accounts/dashboard/`
+- Edit profile (requires login): `/accounts/profile/`
 - Admin: `/admin/`
 
 ### 9. Run the tests
@@ -123,7 +126,7 @@ When `DB_NAME` is set, Django uses PostgreSQL. The PostgreSQL driver is included
 
 ## Current scope and next steps
 
-This is an early working foundation, not the complete SRS implementation. Profile editing, opportunity discovery, search and filtering, connection/mentorship requests, messaging, notifications and verification workflows remain future development milestones.
+This is an early prototype, not the complete SRS implementation. Role-specific profile information, opportunity discovery, search and filtering, connection/mentorship requests, messaging, notifications and verification workflows remain future development milestones.
 
 ## Repository
 
