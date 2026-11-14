@@ -2,7 +2,7 @@
 
 **An Entrepreneurship Support and Connection Platform**
 
-BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. This prototype milestone establishes the application foundation, role-aware registration, login/logout, a protected dashboard and self-service profile editing.
+BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. The current prototype includes role-aware accounts, self-service profiles and a searchable opportunity directory.
 
 ## Technology
 
@@ -20,8 +20,12 @@ BizBridge is a web platform designed to help entrepreneurs discover mentors, inv
 - Protected dashboard showing the signed-in user's role and profile details.
 - Profile editing for first name, last name, email, organisation, location and bio.
 - Profile editing does not allow users to change their account role.
-- Django admin for managing user accounts.
-- Automated tests for account access, registration and profile editing.
+- Opportunity directory available to signed-in users.
+- Search opportunities by title, provider, description, sector or location.
+- Filter opportunities by funding, training, competition, mentorship, partnership or other category.
+- Inactive opportunities are hidden from the directory.
+- Administrators can add, update, activate and deactivate opportunities through Django admin.
+- Automated tests for account access, profile editing and opportunity discovery.
 
 ## Setup and run locally
 
@@ -72,7 +76,7 @@ Keep `.env` private. Do not commit real secret keys or database passwords.
 ### 6. Create database tables
 
 ```bash
-python manage.py makemigrations accounts
+python manage.py makemigrations
 python manage.py migrate
 ```
 
@@ -95,6 +99,7 @@ Open **http://127.0.0.1:8000/** in your browser.
 - Log in: `/accounts/login/`
 - Dashboard (requires login): `/accounts/dashboard/`
 - Edit profile (requires login): `/accounts/profile/`
+- Discover opportunities (requires login): `/opportunities/`
 - Admin: `/admin/`
 
 ### 9. Run the tests
@@ -104,6 +109,10 @@ In a separate terminal with the virtual environment activated:
 ```bash
 python manage.py test
 ```
+
+## Managing opportunities
+
+Create a staff or superuser account and sign in at `/admin/`. Use the Opportunities section to add a title, provider, description, category, sector, location, optional deadline and application link. Keep an opportunity active while applications are open; deactivate it when it is no longer available.
 
 ## Database configuration
 
@@ -119,14 +128,14 @@ When `DB_NAME` is set, Django uses PostgreSQL. The PostgreSQL driver is included
 
 ## Initial user roles
 
-- **Entrepreneur** — creates a profile and will be able to discover support and opportunities.
+- **Entrepreneur** — creates a profile and discovers support and opportunities.
 - **Mentor** — joins to share experience and guide entrepreneurs.
 - **Investor** — joins to discover ventures and potential investment connections.
-- **Administrator** — managed through Django's built-in staff and superuser permissions.
+- **Administrator** — manages accounts and opportunity listings through Django admin.
 
 ## Current scope and next steps
 
-This is an early prototype, not the complete SRS implementation. Role-specific profile information, opportunity discovery, search and filtering, connection/mentorship requests, messaging, notifications and verification workflows remain future development milestones.
+This is an early prototype, not the complete SRS implementation. Connection and mentorship requests, messaging, notifications, verification workflows and deployment remain future development milestones.
 
 ## Repository
 

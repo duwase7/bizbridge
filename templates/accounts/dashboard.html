@@ -15,8 +15,11 @@
         {% if user.bio %}
             <p>{{ user.bio }}</p>
         {% endif %}
-        <a class="button button-small" href="{% url 'edit_profile' %}">Edit profile</a>
-        <p class="coming-soon">Next: discover relevant business opportunities and connect with mentors and investors.</p>
+        <div class="dashboard-actions">
+            <a class="button button-small" href="{% url 'edit_profile' %}">Edit profile</a>
+            <a class="text-link" href="{% url 'opportunity_list' %}">Explore opportunities →</a>
+        </div>
+        <p class="coming-soon">Next: connect with mentors, investors and partners who can support your business.</p>
     </div>
 </section>
 {% endblock %}
