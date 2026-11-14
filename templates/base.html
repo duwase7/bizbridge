@@ -15,6 +15,7 @@
             <a href="{% url 'home' %}">Home</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'opportunity_list' %}">Opportunities</a>
                 <form method="post" action="{% url 'logout' %}" class="nav-form">
                     {% csrf_token %}
                     <button class="nav-link" type="submit">Log out</button>
