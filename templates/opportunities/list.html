@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Discover opportunities | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">Move your business forward</p>
+        <h1>Discover opportunities</h1>
+        <p>Explore funding, training, competitions, mentorship and partnership opportunities shared with the BizBridge community.</p>
+    </div>
+
+    <form class="opportunity-search" method="get" action="{% url 'opportunity_list' %}">
+        <label class="visually-hidden" for="opportunity-search">Search opportunities</label>
+        <input id="opportunity-search" type="search" name="q" value="{{ search_query }}" placeholder="Search by title, provider, sector or location">
+        <label class="visually-hidden" for="opportunity-category">Filter by category</label>
+        <select id="opportunity-category" name="category">
+            <option value="">All categories</option>
+            {% for value, label in categories %}
+                <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button class="button" type="submit">Search</button>
+        {% if search_query or selected_category %}
+            <a class="clear-filters" href="{% url 'opportunity_list' %}">Clear filters</a>
+        {% endif %}
+    </form>
+
+    <div class="opportunity-results">
+        <p class="results-label">
+            {% if opportunities %}
+                {{ opportunities|length }} opportunity{{ opportunities|length|pluralize }} found
+            {% else %}
+                No opportunities found
+            {% endif %}
+        </p>
+
+        {% if opportunities %}
+            <div class="opportunity-grid">
+                {% for opportunity in opportunities %}
+                    <article class="opportunity-card">
+                        <span class="feature-number">{{ opportunity.get_category_display }}</span>
+                        <h2>{{ opportunity.title }}</h2>
+                        <p class="opportunity-provider">{{ opportunity.provider }}</p>
+                        <p>{{ opportunity.description|truncatewords:35 }}</p>
+                        <div class="opportunity-meta">
+                            {% if opportunity.sector %}<span>{{ opportunity.sector }}</span>{% endif %}
+                            {% if opportunity.location %}<span>{{ opportunity.location }}</span>{% endif %}
+                            {% if opportunity.deadline %}<span>Deadline: {{ opportunity.deadline|date:"j M Y" }}</span>{% endif %}
+                        </div>
+                        {% if opportunity.application_url %}
+                            <a class="text-link" href="{{ opportunity.application_url }}" target="_blank" rel="noopener noreferrer">View opportunity ↗</a>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h2>Nothing matches your search yet.</h2>
+                <p>Try another keyword or category. New opportunities can be added by a BizBridge administrator.</p>
+                {% if search_query or selected_category %}
+                    <a class="text-link" href="{% url 'opportunity_list' %}">View all opportunities</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
