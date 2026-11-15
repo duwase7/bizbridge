@@ -2,7 +2,7 @@
 
 **An Entrepreneurship Support and Connection Platform**
 
-BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. The current prototype includes role-aware accounts, self-service profiles and a searchable opportunity directory.
+BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. The current prototype includes role-aware accounts, self-service profiles, a searchable opportunity directory and an initial entrepreneur-to-mentor request workflow.
 
 ## Technology
 
@@ -25,7 +25,11 @@ BizBridge is a web platform designed to help entrepreneurs discover mentors, inv
 - Filter opportunities by funding, training, competition, mentorship, partnership or other category.
 - Inactive opportunities are hidden from the directory.
 - Administrators can add, update, activate and deactivate opportunities through Django admin.
-- Automated tests for account access, profile editing and opportunity discovery.
+- Entrepreneurs can browse mentor profiles and send a mentorship request with an introductory message.
+- Entrepreneurs can track pending, accepted and declined mentorship requests.
+- Mentors can review incoming requests and accept or reject them.
+- A declined request can be resubmitted; duplicate pending or accepted requests are prevented.
+- Automated tests for account access, profile editing, opportunity discovery and mentorship request permissions/status changes.
 
 ## Setup and run locally
 
@@ -100,6 +104,9 @@ Open **http://127.0.0.1:8000/** in your browser.
 - Dashboard (requires login): `/accounts/dashboard/`
 - Edit profile (requires login): `/accounts/profile/`
 - Discover opportunities (requires login): `/opportunities/`
+- Find mentors (entrepreneur accounts): `/mentorship/mentors/`
+- Send a mentorship request: `/mentorship/mentors/<mentor_id>/request/`
+- View sent or received mentorship requests: `/mentorship/requests/`
 - Admin: `/admin/`
 
 ### 9. Run the tests
@@ -135,7 +142,7 @@ When `DB_NAME` is set, Django uses PostgreSQL. The PostgreSQL driver is included
 
 ## Current scope and next steps
 
-This is an early prototype, not the complete SRS implementation. Connection and mentorship requests, messaging, notifications, verification workflows and deployment remain future development milestones.
+This is an early prototype, not the complete SRS implementation. Investor connections, messaging, notifications, verification workflows and deployment remain future development milestones.
 
 ## Repository
 
