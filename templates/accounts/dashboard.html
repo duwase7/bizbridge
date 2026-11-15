@@ -18,8 +18,20 @@
         <div class="dashboard-actions">
             <a class="button button-small" href="{% url 'edit_profile' %}">Edit profile</a>
             <a class="text-link" href="{% url 'opportunity_list' %}">Explore opportunities →</a>
+            {% if user.role == "entrepreneur" %}
+                <a class="text-link" href="{% url 'mentor_directory' %}">Find a mentor →</a>
+                <a class="text-link" href="{% url 'mentorship_requests' %}">View my requests →</a>
+            {% elif user.role == "mentor" %}
+                <a class="text-link" href="{% url 'mentorship_requests' %}">Review mentorship requests →</a>
+            {% endif %}
         </div>
-        <p class="coming-soon">Next: connect with mentors, investors and partners who can support your business.</p>
+        {% if user.role == "entrepreneur" %}
+            <p class="coming-soon">Find a mentor, explain the guidance you need and track the response to your request.</p>
+        {% elif user.role == "mentor" %}
+            <p class="coming-soon">Review mentorship requests from entrepreneurs and respond when you are ready.</p>
+        {% else %}
+            <p class="coming-soon">Explore opportunities while more investor connection features are developed.</p>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

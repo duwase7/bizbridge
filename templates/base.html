@@ -16,6 +16,12 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}">Dashboard</a>
                 <a href="{% url 'opportunity_list' %}">Opportunities</a>
+                {% if user.role == "entrepreneur" %}
+                    <a href="{% url 'mentor_directory' %}">Find mentors</a>
+                    <a href="{% url 'mentorship_requests' %}">My requests</a>
+                {% elif user.role == "mentor" %}
+                    <a href="{% url 'mentorship_requests' %}">Mentorship requests</a>
+                {% endif %}
                 <form method="post" action="{% url 'logout' %}" class="nav-form">
                     {% csrf_token %}
                     <button class="nav-link" type="submit">Log out</button>

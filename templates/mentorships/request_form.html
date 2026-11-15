@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Request mentorship | BizBridge{% endblock %}
+{% block content %}
+<section class="form-section">
+    <div class="form-heading">
+        <p class="eyebrow">Start a conversation</p>
+        <h1>Request mentorship</h1>
+        <p>Send a short introduction to {{ mentor.get_full_name|default:mentor.username }}.</p>
+    </div>
+
+    <div class="account-form">
+        <p class="feature-number">YOUR MENTOR</p>
+        <h2>{{ mentor.get_full_name|default:mentor.username }}</h2>
+        {% if mentor.organization %}<p>{{ mentor.organization }}</p>{% endif %}
+        {% if mentor.bio %}<p>{{ mentor.bio }}</p>{% endif %}
+
+        {% if existing_request and not can_submit %}
+            <p class="request-status status-{{ existing_request.status }}">{{ existing_request.get_status_display }}</p>
+            <p>You already have a request with this mentor. You can review its status from your mentorship requests page.</p>
+            <a class="button button-small" href="{% url 'mentorship_requests' %}">View my requests</a>
+        {% else %}
+            {% if existing_request %}
+                <p>Your previous request was declined. You can send an updated request.</p>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="field">
+                    <label for="{{ form.message.id_for_label }}">Introduce yourself and explain what guidance you need</label>
+                    {{ form.message }}
+                    {% for error in form.message.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
+                </div>
+                {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+                <button class="button button-full" type="submit">Send mentorship request</button>
+            </form>
+        {% endif %}
+        <p class="form-switch"><a href="{% url 'mentor_directory' %}">Back to mentors</a></p>
+    </div>
+</section>
+{% endblock %}
