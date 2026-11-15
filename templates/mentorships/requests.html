@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Mentorship requests | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">{% if is_mentor %}Support entrepreneurs{% else %}Your connections{% endif %}</p>
+        <h1>{% if is_mentor %}Mentorship requests{% else %}My mentorship requests{% endif %}</h1>
+        <p>{% if is_mentor %}Review requests from entrepreneurs and decide whether you can support them.{% else %}Track the status of the mentorship requests you have sent.{% endif %}</p>
+    </div>
+
+    {% if mentorship_requests %}
+        <div class="request-list">
+            {% for mentorship_request in mentorship_requests %}
+                <article class="request-card">
+                    <div class="request-card-heading">
+                        <div>
+                            <span class="feature-number">{% if is_mentor %}FROM ENTREPRENEUR{% else %}MENTOR{% endif %}</span>
+                            <h2>{% if is_mentor %}{{ mentorship_request.entrepreneur.get_full_name|default:mentorship_request.entrepreneur.username }}{% else %}{{ mentorship_request.mentor.get_full_name|default:mentorship_request.mentor.username }}{% endif %}</h2>
+                            <p class="request-meta">{% if is_mentor %}{{ mentorship_request.entrepreneur.organization|default:"Entrepreneur" }}{% else %}{{ mentorship_request.mentor.organization|default:"BizBridge mentor" }}{% endif %} · {{ mentorship_request.created_at|date:"j M Y" }}</p>
+                        </div>
+                        <span class="request-status status-{{ mentorship_request.status }}">{{ mentorship_request.get_status_display }}</span>
+                    </div>
+                    <p class="request-message">{{ mentorship_request.message }}</p>
+
+                    {% if is_mentor and mentorship_request.status == "pending" %}
+                        <div class="request-actions">
+                            <form method="post" action="{% url 'respond_to_mentorship_request' mentorship_request.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="decision" value="accepted">
+                                <button class="button button-small" type="submit">Accept</button>
+                            </form>
+                            <form method="post" action="{% url 'respond_to_mentorship_request' mentorship_request.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="decision" value="declined">
+                                <button class="button button-small button-secondary" type="submit">Reject</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            {% if is_mentor %}
+                <h2>No mentorship requests yet.</h2>
+                <p>When an entrepreneur requests your guidance, it will appear here.</p>
+            {% else %}
+                <h2>You have not sent any requests yet.</h2>
+                <p>Browse the mentor directory to find someone who can support your business.</p>
+                <a class="button button-small" href="{% url 'mentor_directory' %}">Find a mentor</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
