@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Find mentors | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">Learn from experience</p>
+        <h1>Find a mentor</h1>
+        <p>Explore mentors in the BizBridge community and request guidance that supports your business journey.</p>
+    </div>
+
+    {% if mentors %}
+        <div class="opportunity-grid">
+            {% for mentor in mentors %}
+                <article class="opportunity-card">
+                    <span class="feature-number">BIZBRIDGE MENTOR</span>
+                    <h2>{{ mentor.get_full_name|default:mentor.username }}</h2>
+                    {% if mentor.organization %}<p class="opportunity-provider">{{ mentor.organization }}</p>{% endif %}
+                    {% if mentor.location %}<div class="opportunity-meta"><span>{{ mentor.location }}</span></div>{% endif %}
+                    <p>{{ mentor.bio|default:"This mentor has not added a biography yet."|truncatewords:35 }}</p>
+                    <a class="button button-small" href="{% url 'request_mentorship' mentor.pk %}">Request mentorship</a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>No mentors have joined yet.</h2>
+            <p>Check back as more mentors create their BizBridge profiles.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
