@@ -16,9 +16,10 @@ jobs:
     name: Run Django checks and tests
     runs-on: ubuntu-latest
     env:
-      SECRET_KEY: ci-only-not-for-production
+      SECRET_KEY: ci-only-not-for-production-use-a-long-test-secret-value-not-real
       DEBUG: "False"
       ALLOWED_HOSTS: localhost,127.0.0.1
+      CSRF_TRUSTED_ORIGINS: https://localhost
 
     steps:
       - name: Check out repository
@@ -27,7 +28,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version-file: ".python-version"
           cache: pip
 
       - name: Install dependencies
@@ -38,10 +39,16 @@ jobs:
       - name: Check Django configuration
         run: python manage.py check
 
+      - name: Check production security settings
+        run: python manage.py check --deploy
+
       - name: Create and apply database migrations
         run: |
           python manage.py makemigrations --noinput
           python manage.py migrate --noinput
+
+      - name: Collect static files
+        run: python manage.py collectstatic --no-input
 
       - name: Run automated tests
         run: python manage.py test
