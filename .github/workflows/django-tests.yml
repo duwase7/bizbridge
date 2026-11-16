@@ -52,3 +52,5 @@ jobs:
 
       - name: Run automated tests
         run: python manage.py test
+        env:
+          SECURE_SSL_REDIRECT: "False"
