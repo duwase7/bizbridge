@@ -1,3 +1,7 @@
+import os
+from unittest.mock import patch
+
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
@@ -122,3 +126,49 @@ class ProfileManagementTests(TestCase):
             response,
             f"{reverse('login')}?next={reverse('edit_profile')}",
         )
+
+
+class BootstrapAdminCommandTests(TestCase):
+    def setUp(self):
+        self.credentials = {
+            "DJANGO_SUPERUSER_USERNAME": "siteadmin",
+            "DJANGO_SUPERUSER_EMAIL": "siteadmin@example.com",
+            "DJANGO_SUPERUSER_PASSWORD": "ComplexAdminPass!2026",
+        }
+
+    def test_command_skips_when_credentials_are_missing(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DJANGO_SUPERUSER_USERNAME": "",
+                "DJANGO_SUPERUSER_EMAIL": "",
+                "DJANGO_SUPERUSER_PASSWORD": "",
+            },
+        ):
+            call_command("bootstrap_admin")
+
+        self.assertFalse(User.objects.exists())
+
+    def test_command_creates_superuser_from_environment(self):
+        with patch.dict(os.environ, self.credentials):
+            call_command("bootstrap_admin")
+
+        admin = User.objects.get(username="siteadmin")
+        self.assertTrue(admin.is_staff)
+        self.assertTrue(admin.is_superuser)
+        self.assertTrue(admin.check_password("ComplexAdminPass!2026"))
+
+    def test_existing_username_is_never_promoted_or_reset(self):
+        existing_user = User.objects.create_user(
+            username="siteadmin",
+            password="ExistingPass!2026",
+            email="existing@example.com",
+        )
+
+        with patch.dict(os.environ, self.credentials):
+            call_command("bootstrap_admin")
+
+        existing_user.refresh_from_db()
+        self.assertFalse(existing_user.is_staff)
+        self.assertFalse(existing_user.is_superuser)
+        self.assertTrue(existing_user.check_password("ExistingPass!2026"))
