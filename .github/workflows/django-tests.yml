@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - "feature/**"
+      - "fix/**"
 
 permissions:
   contents: read
@@ -45,7 +46,7 @@ jobs:
       - name: Create and apply database migrations
         run: |
           python manage.py makemigrations --noinput
-          python manage.py migrate --noinput
+          python manage.py migrate --run-syncdb --noinput
 
       - name: Collect static files
         run: python manage.py collectstatic --no-input
