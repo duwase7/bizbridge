@@ -81,7 +81,6 @@ Keep `.env` private. Do not commit real secret keys or database passwords.
 ### 6. Create database tables
 
 ```bash
-python manage.py makemigrations
 python manage.py migrate
 ```
 
@@ -129,12 +128,12 @@ The repository includes a Render Blueprint in `render.yaml`. It defines a Python
 3. In the Render Dashboard, choose **New + → Blueprint**.
 4. Select `duwase7/bizbridge` and the `main` branch.
 5. Review the web service and PostgreSQL resources, then apply the Blueprint.
-6. Wait for the first build and deploy to complete. Render will install dependencies, generate the current migration for the mentorships app, collect static files, synchronize apps that do not yet have migration packages, apply migrations and start Django with Gunicorn.
+6. Wait for the first build and deploy to complete. Render will install dependencies, verify that model changes are represented by committed migrations, collect static files, apply the versioned migrations and start Django with Gunicorn.
 7. Copy the public `.onrender.com` URL shown on the web service page and test registration, login, profile editing, opportunity discovery and mentorship requests.
 
 The Blueprint uses Render's Free plans for a course prototype. Important limitations: a free web service spins down after 15 minutes without traffic and may take about a minute to wake up. A free Render PostgreSQL database expires 30 days after it is created. Do not use this setup for permanent production data; export or migrate the database before it expires, or upgrade it if the data must be retained.
 
-The `accounts` and `opportunities` apps currently do not have migration packages, so the build uses Django's `migrate --run-syncdb` option to create their tables. The `mentorships` app has a migration package and its current initial migration is generated during the build. This is a bootstrap approach for the present prototype, not a substitute for versioned schema changes: before adding or changing models, create and commit reviewed migration files for the affected apps. The free web-service plan does not provide dashboard Shell access. To create a hosted admin account without Shell access, add `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL` and `DJANGO_SUPERUSER_PASSWORD` as private environment variables in the Render service settings, then trigger a deploy. The build script runs an idempotent bootstrap command after migrations: it creates the account only if that username does not already exist, and never changes an existing account or password. Remove the password environment variable after the first successful bootstrap. Never commit administrator credentials to this repository.
+Each Django app now has a committed initial migration, so local setup and deployment use the same versioned database schema. Before adding or changing models, run `python manage.py makemigrations`, review the generated migration files, and commit them with the model changes. CI and the Render build run `python manage.py makemigrations --check --dry-run` to catch model changes that have not been captured in migrations, then apply the committed migrations with `python manage.py migrate`. The free web-service plan does not provide dashboard Shell access. To create a hosted admin account without Shell access, add `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL` and `DJANGO_SUPERUSER_PASSWORD` as private environment variables in the Render service settings, then trigger a deploy. The build script runs an idempotent bootstrap command after migrations: it creates the account only if that username does not already exist, and never changes an existing account or password. Remove the password environment variable after the first successful bootstrap. Never commit administrator credentials to this repository.
 
 ## Database configuration
 

@@ -45,8 +45,8 @@ jobs:
 
       - name: Create and apply database migrations
         run: |
-          python manage.py makemigrations --noinput
-          python manage.py migrate --run-syncdb --noinput
+          python manage.py makemigrations --check --dry-run
+          python manage.py migrate --noinput
 
       - name: Collect static files
         run: python manage.py collectstatic --no-input
