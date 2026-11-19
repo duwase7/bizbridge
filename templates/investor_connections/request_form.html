@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Connect with an investor | BizBridge{% endblock %}
+{% block content %}
+<section class="form-section">
+    <div class="form-heading">
+        <p class="eyebrow">Introduce your venture</p>
+        <h1>Connect with an investor</h1>
+        <p>Share a concise introduction with {{ investor.get_full_name|default:investor.username }}.</p>
+    </div>
+
+    <div class="account-form">
+        <p class="feature-number">INVESTOR PROFILE</p>
+        <h2>{{ investor.get_full_name|default:investor.username }}</h2>
+        {% if investor.organization %}<p>{{ investor.organization }}</p>{% endif %}
+        {% if investor.location %}<p>{{ investor.location }}</p>{% endif %}
+        {% if investor.bio %}<p>{{ investor.bio }}</p>{% endif %}
+
+        {% if existing_request and not can_submit %}
+            <p class="request-status status-{{ existing_request.status }}">{{ existing_request.get_status_display }}</p>
+            <p>You already have a connection request with this investor. You can review its status from your requests page.</p>
+            <a class="button button-small" href="{% url 'investor_connection_requests' %}">View my requests</a>
+        {% else %}
+            {% if existing_request %}
+                <p>Your previous request was declined. You can send an updated introduction.</p>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="field">
+                    <label for="{{ form.message.id_for_label }}">Introduce your business and explain the support or investment you are seeking</label>
+                    {{ form.message }}
+                    {% for error in form.message.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
+                </div>
+                {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+                <button class="button button-full" type="submit">Send connection request</button>
+            </form>
+        {% endif %}
+        <p class="form-switch"><a href="{% url 'investor_directory' %}">Back to investors</a></p>
+    </div>
+</section>
+{% endblock %}

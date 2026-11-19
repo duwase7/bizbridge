@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Find investors | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">Connect your venture to capital</p>
+        <h1>Find investors</h1>
+        <p>Explore investor profiles and introduce your business to organisations that may align with your goals.</p>
+    </div>
+
+    <form method="get" class="opportunity-search" role="search">
+        <label class="visually-hidden" for="investor-search">Search investors</label>
+        <input id="investor-search" type="search" name="q" value="{{ query }}" placeholder="Search by name, organisation, location or focus">
+        <button class="button button-small" type="submit">Search investors</button>
+        {% if query %}<a class="clear-filters" href="{% url 'investor_directory' %}">Clear search</a>{% endif %}
+    </form>
+
+    {% if investors %}
+        <p class="results-label">{{ investors|length }} investor{{ investors|length|pluralize }} found</p>
+        <div class="opportunity-grid">
+            {% for investor in investors %}
+                <article class="opportunity-card">
+                    <span class="feature-number">BIZBRIDGE INVESTOR</span>
+                    <h2>{{ investor.get_full_name|default:investor.username }}</h2>
+                    {% if investor.organization %}<p class="opportunity-provider">{{ investor.organization }}</p>{% endif %}
+                    {% if investor.location %}<div class="opportunity-meta"><span>{{ investor.location }}</span></div>{% endif %}
+                    <p>{{ investor.bio|default:"This investor has not added an investment focus yet."|truncatewords:35 }}</p>
+                    <a class="button button-small" href="{% url 'request_investor_connection' investor.pk %}">Introduce your business</a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>{% if query %}No matching investors found.{% else %}No investors have joined yet.{% endif %}</h2>
+            <p>{% if query %}Try another name, organisation, location or investment focus.{% else %}Check back as investors create their BizBridge profiles.{% endif %}</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

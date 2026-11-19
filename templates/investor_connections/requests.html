@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Investor connection requests | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">{% if is_investor %}Explore potential ventures{% else %}Your connections{% endif %}</p>
+        <h1>{% if is_investor %}Investor connection requests{% else %}My investor requests{% endif %}</h1>
+        <p>{% if is_investor %}Review introductions from entrepreneurs and decide whether to continue the conversation.{% else %}Track the status of the introductions you have sent to investors.{% endif %}</p>
+    </div>
+
+    {% if connection_requests %}
+        <div class="request-list">
+            {% for connection_request in connection_requests %}
+                <article class="request-card">
+                    <div class="request-card-heading">
+                        <div>
+                            <span class="feature-number">{% if is_investor %}FROM ENTREPRENEUR{% else %}INVESTOR{% endif %}</span>
+                            <h2>{% if is_investor %}{{ connection_request.entrepreneur.get_full_name|default:connection_request.entrepreneur.username }}{% else %}{{ connection_request.investor.get_full_name|default:connection_request.investor.username }}{% endif %}</h2>
+                            <p class="request-meta">{% if is_investor %}{{ connection_request.entrepreneur.organization|default:"Entrepreneur" }}{% else %}{{ connection_request.investor.organization|default:"BizBridge investor" }}{% endif %} · {{ connection_request.created_at|date:"j M Y" }}</p>
+                        </div>
+                        <span class="request-status status-{{ connection_request.status }}">{{ connection_request.get_status_display }}</span>
+                    </div>
+                    <p class="request-message">{{ connection_request.message }}</p>
+
+                    {% if is_investor and connection_request.status == "pending" %}
+                        <div class="request-actions">
+                            <form method="post" action="{% url 'respond_to_investor_request' connection_request.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="decision" value="accepted">
+                                <button class="button button-small" type="submit">Accept</button>
+                            </form>
+                            <form method="post" action="{% url 'respond_to_investor_request' connection_request.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="decision" value="declined">
+                                <button class="button button-small button-secondary" type="submit">Decline</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            {% if is_investor %}
+                <h2>No investor connection requests yet.</h2>
+                <p>Introductions from entrepreneurs will appear here.</p>
+            {% else %}
+                <h2>You have not contacted an investor yet.</h2>
+                <p>Browse investor profiles to introduce your business and explain what support you are seeking.</p>
+                <a class="button button-small" href="{% url 'investor_directory' %}">Find investors</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
