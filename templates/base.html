@@ -18,9 +18,13 @@
                 <a href="{% url 'opportunity_list' %}">Opportunities</a>
                 {% if user.role == "entrepreneur" %}
                     <a href="{% url 'mentor_directory' %}">Find mentors</a>
-                    <a href="{% url 'mentorship_requests' %}">My requests</a>
+                    <a href="{% url 'mentorship_requests' %}">Mentorship</a>
+                    <a href="{% url 'investor_directory' %}">Find investors</a>
+                    <a href="{% url 'investor_connection_requests' %}">Investor requests</a>
                 {% elif user.role == "mentor" %}
                     <a href="{% url 'mentorship_requests' %}">Mentorship requests</a>
+                {% elif user.role == "investor" %}
+                    <a href="{% url 'investor_connection_requests' %}">Entrepreneur requests</a>
                 {% endif %}
                 <form method="post" action="{% url 'logout' %}" class="nav-form">
                     {% csrf_token %}
