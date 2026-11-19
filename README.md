@@ -2,7 +2,7 @@
 
 **An Entrepreneurship Support and Connection Platform**
 
-BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. The current prototype includes role-aware accounts, self-service profiles, a searchable opportunity directory and an initial entrepreneur-to-mentor request workflow.
+BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. The current prototype includes role-aware accounts, self-service profiles, a searchable opportunity directory, and entrepreneur-to-mentor and entrepreneur-to-investor request workflows.
 
 ## Technology
 
@@ -29,8 +29,13 @@ BizBridge is a web platform designed to help entrepreneurs discover mentors, inv
 - Entrepreneurs can browse mentor profiles and send a mentorship request with an introductory message.
 - Entrepreneurs can track pending, accepted and declined mentorship requests.
 - Mentors can review incoming requests and accept or reject them.
-- A declined request can be resubmitted; duplicate pending or accepted requests are prevented.
-- Automated tests for account access, profile editing, opportunity discovery and mentorship request permissions/status changes.
+- A declined mentorship request can be resubmitted; duplicate pending or accepted requests are prevented.
+- Entrepreneurs can browse and search investor profiles by name, organisation, location or investment focus.
+- Entrepreneurs can introduce their businesses to investors through a connection request.
+- Investors can review incoming entrepreneur introductions and accept or decline them.
+- Entrepreneurs can track pending, accepted and declined investor connection requests; declined requests can be resubmitted.
+- Role-based access checks prevent mentors from initiating investor requests and prevent users from responding to requests addressed to someone else.
+- Automated tests cover account access, profile editing, opportunity discovery, mentorship requests and investor connection permissions/status changes.
 
 ## Setup and run locally
 
@@ -107,6 +112,9 @@ Open **http://127.0.0.1:8000/** in your browser.
 - Find mentors (entrepreneur accounts): `/mentorship/mentors/`
 - Send a mentorship request: `/mentorship/mentors/<mentor_id>/request/`
 - View sent or received mentorship requests: `/mentorship/requests/`
+- Find and search investors (entrepreneur accounts): `/connections/investors/`
+- Send an investor connection request: `/connections/investors/<investor_id>/request/`
+- View sent or received investor requests: `/connections/requests/`
 - Admin: `/admin/`
 
 ### 9. Run the tests
@@ -129,7 +137,7 @@ The repository includes a Render Blueprint in `render.yaml`. It defines a Python
 4. Select `duwase7/bizbridge` and the `main` branch.
 5. Review the web service and PostgreSQL resources, then apply the Blueprint.
 6. Wait for the first build and deploy to complete. Render will install dependencies, verify that model changes are represented by committed migrations, collect static files, apply the versioned migrations and start Django with Gunicorn.
-7. Copy the public `.onrender.com` URL shown on the web service page and test registration, login, profile editing, opportunity discovery and mentorship requests.
+7. Copy the public `.onrender.com` URL shown on the web service page and test registration, login, profile editing, opportunity discovery, mentorship requests and investor connection requests.
 
 The Blueprint uses Render's Free plans for a course prototype. Important limitations: a free web service spins down after 15 minutes without traffic and may take about a minute to wake up. A free Render PostgreSQL database expires 30 days after it is created. Do not use this setup for permanent production data; export or migrate the database before it expires, or upgrade it if the data must be retained.
 
@@ -151,14 +159,14 @@ The PostgreSQL driver is included in `requirements.txt`.
 
 ## Initial user roles
 
-- **Entrepreneur** — creates a profile and discovers support and opportunities.
+- **Entrepreneur** — creates a profile, discovers support and opportunities, and initiates connections.
 - **Mentor** — joins to share experience and guide entrepreneurs.
-- **Investor** — joins to discover ventures and potential investment connections.
-- **Administrator** — manages accounts and opportunity listings through Django admin.
+- **Investor** — creates an organisation profile and reviews introductions from entrepreneurs.
+- **Administrator** — manages accounts, opportunity listings and connection requests through Django admin.
 
 ## Current scope and next steps
 
-This is an early prototype, not the complete SRS implementation. Investor connections, messaging, notifications and verification workflows remain future development milestones.
+This is an early prototype, not the complete SRS implementation. Direct messaging, notifications, partner discovery and formal verification workflows remain future development milestones.
 
 ## Repository
 
