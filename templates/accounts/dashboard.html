@@ -11,9 +11,21 @@
             <p><strong>Role</strong><span>{{ user.get_role_display }}</span></p>
             <p><strong>Organisation</strong><span>{{ user.organization|default:"Not added yet" }}</span></p>
             <p><strong>Location</strong><span>{{ user.location|default:"Not added yet" }}</span></p>
+            {% if user.role == "entrepreneur" %}
+                <p><strong>Business</strong><span>{{ user.business_name|default:"Not added yet" }}</span></p>
+                <p><strong>Sector</strong><span>{{ user.business_sector|default:"Not added yet" }}</span></p>
+                <p><strong>Stage</strong><span>{{ user.business_stage|default:"Not added yet" }}</span></p>
+            {% elif user.role == "mentor" %}
+                <p><strong>Expertise</strong><span>{{ user.mentor_expertise|default:"Not added yet" }}</span></p>
+                <p><strong>Availability</strong><span>{{ user.mentor_availability|default:"Not added yet" }}</span></p>
+            {% elif user.role == "investor" %}
+                <p><strong>Investor type</strong><span>{{ user.investor_type|default:"Not added yet" }}</span></p>
+                {% if user.website %}<p><strong>Website</strong><span><a href="{{ user.website }}" target="_blank" rel="noopener noreferrer">{{ user.website }}</a></span></p>{% endif %}
+            {% endif %}
         </div>
-        {% if user.bio %}
-            <p>{{ user.bio }}</p>
+        {% if user.bio %}<p>{{ user.bio }}</p>{% endif %}
+        {% if user.role == "entrepreneur" and user.business_description %}
+            <p>{{ user.business_description }}</p>
         {% endif %}
         <div class="dashboard-actions">
             <a class="button button-small" href="{% url 'edit_profile' %}">Edit profile</a>
