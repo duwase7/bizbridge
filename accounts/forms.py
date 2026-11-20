@@ -45,10 +45,46 @@ class ProfileForm(forms.ModelForm):
             "organization",
             "location",
             "bio",
+            "business_name",
+            "business_sector",
+            "business_stage",
+            "business_description",
+            "mentor_expertise",
+            "mentor_availability",
+            "investor_type",
+            "website",
         )
         widgets = {
             "bio": forms.Textarea(attrs={"rows": 4}),
+            "business_description": forms.Textarea(attrs={"rows": 4}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        role = self.instance.role
+        role_fields = {
+            User.Role.ENTREPRENEUR: (
+                "business_name",
+                "business_sector",
+                "business_stage",
+                "business_description",
+            ),
+            User.Role.MENTOR: ("mentor_expertise", "mentor_availability"),
+            User.Role.INVESTOR: ("investor_type", "website"),
+        }
+        visible_fields = set(role_fields.get(role, ()))
+        all_role_fields = {
+            "business_name",
+            "business_sector",
+            "business_stage",
+            "business_description",
+            "mentor_expertise",
+            "mentor_availability",
+            "investor_type",
+            "website",
+        }
+        for field_name in all_role_fields - visible_fields:
+            self.fields.pop(field_name)
 
     def clean_email(self):
         email = self.cleaned_data["email"].strip().lower()
