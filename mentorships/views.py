@@ -2,9 +2,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from accounts.models import User
+from notifications.models import Notification
 
 from .forms import MentorshipRequestForm
 from .models import MentorshipRequest
@@ -67,6 +69,13 @@ def request_mentorship(request, mentor_id):
                     created = True
 
             if created:
+                actor_name = request.user.get_full_name() or request.user.username
+                Notification.objects.create(
+                    recipient=mentor,
+                    actor=request.user,
+                    message=f"{actor_name} sent you a mentorship request.",
+                    link=reverse("mentorship_requests"),
+                )
                 messages.success(request, "Your mentorship request has been sent.")
             else:
                 messages.info(request, "You already have an active request with this mentor.")
@@ -135,5 +144,12 @@ def respond_to_mentorship_request(request, request_id):
 
     mentorship_request.status = decision
     mentorship_request.save(update_fields=("status", "updated_at"))
+    mentor_name = request.user.get_full_name() or request.user.username
+    Notification.objects.create(
+        recipient=mentorship_request.entrepreneur,
+        actor=request.user,
+        message=f"Your mentorship request was {decision} by {mentor_name}.",
+        link=reverse("mentorship_requests"),
+    )
     messages.success(request, "Your response has been recorded.")
     return redirect("mentorship_requests")
