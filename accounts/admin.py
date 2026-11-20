@@ -8,6 +8,18 @@ from .models import User
 class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         ("BizBridge profile", {"fields": ("role", "organization", "location", "bio")}),
+        (
+            "Entrepreneur details",
+            {"fields": ("business_name", "business_sector", "business_stage", "business_description")},
+        ),
+        (
+            "Mentor details",
+            {"fields": ("mentor_expertise", "mentor_availability")},
+        ),
+        (
+            "Investor details",
+            {"fields": ("investor_type", "website")},
+        ),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
         ("BizBridge profile", {"fields": ("role", "organization", "location")}),
