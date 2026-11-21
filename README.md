@@ -112,13 +112,27 @@ Create a staff or superuser account and sign in at `/admin/`. Use the Opportunit
 
 ## Deployment
 
-The repository currently includes a Render Blueprint in `render.yaml` for a Python web service and PostgreSQL database. Deployment is a separate milestone; no public deployment URL is claimed in this repository update.
+The repository includes a Render Blueprint in `render.yaml` for a Python web service and PostgreSQL database.
 
-The free Render web service can spin down after inactivity, and the free PostgreSQL database has a limited lifetime. Review the provider's current plan terms before deploying. Keep secret keys and database credentials in private environment variables; never commit them to Git.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/duwase7/bizbridge)
+
+To deploy the current `main` branch:
+
+1. Merge the features you want included in the demo before deploying. The button deploys the repository's default branch.
+2. Click **Deploy to Render** and sign in to Render. Connect GitHub if Render asks for permission.
+3. Review the Blueprint. It should create a `bizbridge` web service and a `bizbridge-db` PostgreSQL database in Frankfurt, both on the Free plan.
+4. Click **Apply** or **Deploy Blueprint** to provision the resources.
+5. Wait for the web service's deploy status to show **Live**, then open its generated `.onrender.com` URL and test registration, login, dashboards and the main workflows.
+
+The Blueprint generates the `SECRET_KEY` and connects the web service to PostgreSQL. Do not add secrets or database passwords to GitHub.
+
+**Free-plan limitations:** Render free web services spin down after 15 minutes without traffic and can take about a minute to wake on the next request. Free Render PostgreSQL databases expire 30 days after creation; export any demo data you need before the database expires. These limits are suitable for a short prototype demonstration, not long-term production data storage. See [Render's free-instance limits](https://render.com/docs/free) and [Blueprint setup guide](https://render.com/docs/infrastructure-as-code).
+
+A public deployment URL is not claimed until the Render service has deployed successfully and the live site has been opened and checked.
 
 ## Current scope
 
-The prototype implements account registration and access, role-specific profile editing, opportunity discovery, mentorship requests and investor connection requests. The SRS also specifies direct messaging, administrator verification, account suspension and activity reports. These remain outstanding implementation work and should not be described as completed until implemented and tested.
+The prototype implements account registration and access, role-specific profile editing, opportunity discovery, mentorship requests, investor connection requests and in-app notifications. The SRS also specifies direct messaging, administrator verification, account suspension and activity reports. These remain outstanding implementation work and should not be described as completed until implemented and tested.
 
 ## Repository
 
