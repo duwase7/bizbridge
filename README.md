@@ -29,6 +29,7 @@ BizBridge is a web platform designed to help entrepreneurs discover mentors, inv
 - Entrepreneurs can browse mentor profiles and send mentorship requests; mentors can accept or reject requests.
 - Entrepreneurs can browse and search investor profiles and send introductions; investors can accept or decline requests.
 - Request status tracking, role-based permissions and duplicate-request protection.
+- In-app notifications when mentorship or investor requests are received or accepted/declined, with unread counts and read controls.
 - Automated tests cover account access, profile editing, opportunity discovery, mentorship requests and investor connection permissions/status changes.
 
 ## Setup and run locally
@@ -102,6 +103,7 @@ python manage.py makemigrations --check --dry-run
 - Mentorship requests: `/mentorship/requests/`
 - Find investors: `/connections/investors/`
 - Investor connection requests: `/connections/requests/`
+- Notifications: `/notifications/`
 - Admin: `/admin/`
 
 ## Managing opportunities
@@ -116,7 +118,7 @@ The free Render web service can spin down after inactivity, and the free Postgre
 
 ## Current scope
 
-The prototype implements account registration and access, role-specific profile editing, opportunity discovery, mentorship requests and investor connection requests. The SRS also specifies direct messaging, notifications, administrator verification, account suspension and activity reports. These remain outstanding implementation work and should not be described as completed until implemented and tested.
+The prototype implements account registration and access, role-specific profile editing, opportunity discovery, mentorship requests and investor connection requests. The SRS also specifies direct messaging, administrator verification, account suspension and activity reports. These remain outstanding implementation work and should not be described as completed until implemented and tested.
 
 ## Repository
 
