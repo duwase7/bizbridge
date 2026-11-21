@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from accounts.models import User
+from notifications.models import Notification
 
 from .models import MentorshipRequest
 
@@ -57,6 +58,9 @@ class MentorshipRequestFlowTests(TestCase):
         self.assertEqual(mentorship_request.entrepreneur, self.entrepreneur)
         self.assertEqual(mentorship_request.mentor, self.mentor)
         self.assertEqual(mentorship_request.status, MentorshipRequest.Status.PENDING)
+        notification = Notification.objects.get(recipient=self.mentor)
+        self.assertEqual(notification.actor, self.entrepreneur)
+        self.assertIn("mentorship request", notification.message)
         self.assertEqual(
             mentorship_request.message,
             "I need advice on validating my business model.",
@@ -102,6 +106,8 @@ class MentorshipRequestFlowTests(TestCase):
         self.assertRedirects(response, reverse("mentorship_requests"))
         mentorship_request.refresh_from_db()
         self.assertEqual(mentorship_request.status, MentorshipRequest.Status.ACCEPTED)
+        notification = Notification.objects.get(recipient=self.entrepreneur)
+        self.assertIn("accepted", notification.message)
 
     def test_mentor_can_reject_a_pending_request(self):
         mentorship_request = self.create_request()

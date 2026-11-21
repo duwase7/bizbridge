@@ -3,9 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from accounts.models import User
+from notifications.models import Notification
 
 from .forms import InvestorConnectionRequestForm
 from .models import InvestorConnectionRequest
@@ -85,6 +87,13 @@ def request_investor_connection(request, investor_id):
                     created = True
 
             if created:
+                actor_name = request.user.get_full_name() or request.user.username
+                Notification.objects.create(
+                    recipient=investor,
+                    actor=request.user,
+                    message=f"{actor_name} sent you an investor connection request.",
+                    link=reverse("investor_connection_requests"),
+                )
                 messages.success(request, "Your investor connection request has been sent.")
             else:
                 messages.info(request, "You already have an active request with this investor.")
@@ -156,5 +165,12 @@ def respond_to_investor_request(request, request_id):
 
     connection_request.status = decision
     connection_request.save(update_fields=("status", "updated_at"))
+    investor_name = request.user.get_full_name() or request.user.username
+    Notification.objects.create(
+        recipient=connection_request.entrepreneur,
+        actor=request.user,
+        message=f"Your investor connection request was {decision} by {investor_name}.",
+        link=reverse("investor_connection_requests"),
+    )
     messages.success(request, "Your response has been recorded.")
     return redirect("investor_connection_requests")

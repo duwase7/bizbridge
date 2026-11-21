@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from accounts.models import User
+from notifications.models import Notification
 
 from .models import InvestorConnectionRequest
 
@@ -82,6 +83,9 @@ class InvestorConnectionFlowTests(TestCase):
         self.assertEqual(connection_request.entrepreneur, self.entrepreneur)
         self.assertEqual(connection_request.investor, self.investor)
         self.assertEqual(connection_request.status, InvestorConnectionRequest.Status.PENDING)
+        notification = Notification.objects.get(recipient=self.investor)
+        self.assertEqual(notification.actor, self.entrepreneur)
+        self.assertIn("investor connection request", notification.message)
 
     def test_duplicate_pending_request_is_not_created(self):
         self.create_request()
@@ -118,6 +122,8 @@ class InvestorConnectionFlowTests(TestCase):
         self.assertRedirects(response, reverse("investor_connection_requests"))
         connection_request.refresh_from_db()
         self.assertEqual(connection_request.status, InvestorConnectionRequest.Status.ACCEPTED)
+        notification = Notification.objects.get(recipient=self.entrepreneur)
+        self.assertIn("accepted", notification.message)
 
     def test_investor_can_decline_a_pending_request(self):
         connection_request = self.create_request()
