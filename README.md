@@ -126,7 +126,14 @@ Useful options:
 - `--prefix mydemo` uses `mydemo_founder`, `mydemo_mentor` and `mydemo_investor` instead of the default usernames.
 - `--reset-passwords` explicitly resets passwords for existing matching demo accounts. Without this option, rerunning the command preserves existing passwords and profile edits.
 
-On the first run, both requests are pending and the mentor and investor receive unread notifications. Rerunning the command reuses existing records and preserves any request decisions or notification read states. It does not delete data, create an administrator or run during deployment. It refuses to repurpose an existing username with a different role or an administrative account. Run it only when you intentionally want sample records in the database used for your demonstration, and do not reuse a personal or production password.
+On the first run, both requests are pending and the mentor and investor receive unread notifications. Rerunning the command reuses existing records and preserves any request decisions or notification read states. It does not delete data, create an administrator or run during deployment. It refuses to repurpose an existing username with a different role or an administrative account. Run it only when you intentionally want sample records in a database you can access, and do not reuse a personal or production password.
+
+**Important for Render Free:** Free web services do not provide Shell or SSH access, so this command cannot be run directly against the hosted Free service. It is available for local development or a service plan that includes shell access. To populate the public Free deployment instead:
+
+1. In the Render service's Environment settings, set `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL` and a strong, unique `DJANGO_SUPERUSER_PASSWORD`. Do not put these values in GitHub.
+2. Trigger a redeploy. The repository's `build.sh` runs `bootstrap_admin` after migrations, which creates the admin account if that username does not already exist.
+3. Sign in at `/admin/` and add a few clearly labelled demo opportunities.
+4. Register one entrepreneur, one mentor and one investor through `/accounts/signup/`. Use the entrepreneur account to send mentorship and investor requests, then sign in as the mentor and investor to respond and view notifications.
 
 ## Deployment
 
