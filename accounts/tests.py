@@ -263,3 +263,20 @@ class DemoDataCommandTests(TestCase):
     def test_command_rejects_an_unsafe_username_prefix(self):
         with self.assertRaises(CommandError):
             self.seed_demo_data(prefix="../unsafe")
+
+
+    def test_command_refuses_to_repurpose_an_administrative_account(self):
+        User.objects.create_user(
+            username="demo_investor",
+            password="ExistingPass!2026",
+            role=User.Role.INVESTOR,
+            is_staff=True,
+        )
+
+        with self.assertRaises(CommandError):
+            self.seed_demo_data()
+
+        self.assertFalse(User.objects.filter(username="demo_founder").exists())
+        investor = User.objects.get(username="demo_investor")
+        self.assertTrue(investor.is_staff)
+        self.assertTrue(investor.check_password("ExistingPass!2026"))
