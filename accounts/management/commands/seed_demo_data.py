@@ -187,7 +187,7 @@ class Command(BaseCommand):
                     },
                 )
 
-            mentorship_request, _ = MentorshipRequest.objects.get_or_create(
+            MentorshipRequest.objects.get_or_create(
                 entrepreneur=founder,
                 mentor=mentor,
                 defaults={
@@ -199,7 +199,7 @@ class Command(BaseCommand):
                     "status": MentorshipRequest.Status.PENDING,
                 },
             )
-            investor_request, _ = InvestorConnectionRequest.objects.get_or_create(
+            InvestorConnectionRequest.objects.get_or_create(
                 entrepreneur=founder,
                 investor=investor,
                 defaults={
