@@ -126,7 +126,7 @@ Useful options:
 - `--prefix mydemo` uses `mydemo_founder`, `mydemo_mentor` and `mydemo_investor` instead of the default usernames.
 - `--reset-passwords` explicitly resets passwords for existing matching demo accounts. Without this option, rerunning the command preserves existing passwords and profile edits.
 
-The command is safe to rerun: it reuses matching demo records, does not delete data, does not create an administrator and does not run during deployment. It refuses to repurpose an existing username with a different role or an administrative account. Run it only when you intentionally want sample records in the database used for your demonstration, and do not reuse a personal or production password.
+On the first run, both requests are pending and the mentor and investor receive unread notifications. Rerunning the command reuses existing records and preserves any request decisions or notification read states. It does not delete data, create an administrator or run during deployment. It refuses to repurpose an existing username with a different role or an administrative account. Run it only when you intentionally want sample records in the database used for your demonstration, and do not reuse a personal or production password.
 
 ## Deployment
 
