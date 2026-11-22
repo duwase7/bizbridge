@@ -30,7 +30,8 @@ BizBridge is a web platform designed to help entrepreneurs discover mentors, inv
 - Entrepreneurs can browse and search investor profiles and send introductions; investors can accept or decline requests.
 - Request status tracking, role-based permissions and duplicate-request protection.
 - In-app notifications when mentorship or investor requests are received or accepted/declined, with unread counts and read controls.
-- Automated tests cover account access, profile editing, opportunity discovery, mentorship requests and investor connection permissions/status changes.
+- Optional, explicit demo-data command creates sample role-based accounts, opportunities, requests and notifications; it never runs automatically.
+- Automated tests cover account access, profile editing, opportunity discovery, mentorship requests, investor connection permissions/status changes and demo-data seeding.
 
 ## Setup and run locally
 
@@ -109,6 +110,23 @@ python manage.py makemigrations --check --dry-run
 ## Managing opportunities
 
 Create a staff or superuser account and sign in at `/admin/`. Use the Opportunities section to add or update opportunity information, including its category, sector, location, deadline and application link.
+
+## Preparing demonstration data
+
+For a walkthrough, you can create three sample accounts (entrepreneur, mentor and investor), three clearly labelled sample opportunities, one pending mentorship request, one pending investor connection request and their notifications:
+
+```bash
+python manage.py seed_demo_data --password "Choose-A-Strong-Demo-Password"
+```
+
+The password must meet the project's Django password validators. The command prints the three usernames but does not print the password. The default usernames are `demo_founder`, `demo_mentor` and `demo_investor`. All sample opportunities are labelled `[DEMO]` and are not real funding or application calls.
+
+Useful options:
+
+- `--prefix mydemo` uses `mydemo_founder`, `mydemo_mentor` and `mydemo_investor` instead of the default usernames.
+- `--reset-passwords` explicitly resets passwords for existing matching demo accounts. Without this option, rerunning the command preserves existing passwords and profile edits.
+
+The command is safe to rerun: it reuses matching demo records, does not delete data, does not create an administrator and does not run during deployment. It refuses to repurpose an existing username with a different role or an administrative account. Run it only when you intentionally want sample records in the database used for your demonstration, and do not reuse a personal or production password.
 
 ## Deployment
 
