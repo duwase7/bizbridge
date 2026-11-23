@@ -18,8 +18,12 @@
                 <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
             {% endfor %}
         </select>
+        <label class="visually-hidden" for="opportunity-sector">Sector</label>
+        <input id="opportunity-sector" type="text" name="sector" value="{{ sector }}" placeholder="Sector">
+        <label class="visually-hidden" for="opportunity-location">Location</label>
+        <input id="opportunity-location" type="text" name="location" value="{{ location }}" placeholder="Location">
         <button class="button" type="submit">Search</button>
-        {% if search_query or selected_category %}
+        {% if has_filters %}
             <a class="clear-filters" href="{% url 'opportunity_list' %}">Clear filters</a>
         {% endif %}
     </form>
@@ -46,9 +50,7 @@
                             {% if opportunity.location %}<span>{{ opportunity.location }}</span>{% endif %}
                             {% if opportunity.deadline %}<span>Deadline: {{ opportunity.deadline|date:"j M Y" }}</span>{% endif %}
                         </div>
-                        {% if opportunity.application_url %}
-                            <a class="text-link" href="{{ opportunity.application_url }}" target="_blank" rel="noopener noreferrer">View opportunity ↗</a>
-                        {% endif %}
+                        <a class="text-link" href="{% url 'opportunity_detail' opportunity.pk %}">View details →</a>
                     </article>
                 {% endfor %}
             </div>
@@ -56,7 +58,7 @@
             <div class="empty-state">
                 <h2>Nothing matches your search yet.</h2>
                 <p>Try another keyword or category. New opportunities can be added by a BizBridge administrator.</p>
-                {% if search_query or selected_category %}
+                {% if has_filters %}
                     <a class="text-link" href="{% url 'opportunity_list' %}">View all opportunities</a>
                 {% endif %}
             </div>
