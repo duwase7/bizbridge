@@ -280,3 +280,57 @@ class DemoDataCommandTests(TestCase):
         investor = User.objects.get(username="demo_investor")
         self.assertTrue(investor.is_staff)
         self.assertTrue(investor.check_password("ExistingPass!2026"))
+
+
+class SearchAndRecommendationTests(TestCase):
+    def setUp(self):
+        self.founder = User.objects.create_user(
+            username="aline", password="StrongPass!2026", role=User.Role.ENTREPRENEUR,
+            business_sector="Agriculture", business_stage="Early stage", location="Kigali",
+        )
+        self.mentor = User.objects.create_user(
+            username="maya", first_name="Maya", password="StrongPass!2026", role=User.Role.MENTOR,
+            interest_sectors="Agriculture, Fintech", location="Kigali", mentor_expertise="Marketing",
+        )
+        self.other_mentor = User.objects.create_user(
+            username="paul", first_name="Paul", password="StrongPass!2026", role=User.Role.MENTOR,
+            interest_sectors="Health", location="Musanze",
+        )
+        self.investor = User.objects.create_user(
+            username="eric", password="StrongPass!2026", role=User.Role.INVESTOR,
+            interest_sectors="Agriculture", location="Kigali",
+        )
+
+    def test_entrepreneur_can_filter_people_by_role_and_sector(self):
+        self.client.force_login(self.founder)
+        response = self.client.get(reverse("people_directory"), {"role": "mentor", "sector": "agri"})
+        self.assertContains(response, "Maya")
+        self.assertNotContains(response, "Paul")
+        self.assertNotContains(response, "eric")
+
+    def test_investor_searches_businesses_only(self):
+        self.client.force_login(self.investor)
+        response = self.client.get(reverse("people_directory"), {"stage": "Early stage"})
+        people = list(response.context["people"])
+        self.assertEqual(people, [self.founder])
+
+    def test_mentor_cannot_view_other_mentor_profile(self):
+        self.client.force_login(self.mentor)
+        response = self.client.get(reverse("person_detail", args=[self.other_mentor.pk]))
+        self.assertRedirects(response, reverse("people_directory"))
+
+    def test_dashboard_ranks_matching_people_first(self):
+        self.client.force_login(self.founder)
+        response = self.client.get(reverse("dashboard"))
+        recommended = list(response.context["recommended_people"])
+        self.assertIn(self.mentor, recommended)
+        self.assertIn(self.investor, recommended)
+        self.assertNotIn(self.other_mentor, recommended)
+
+    def test_verified_profile_shows_badge(self):
+        self.mentor.is_verified = True
+        self.mentor.save()
+        self.client.force_login(self.founder)
+        response = self.client.get(reverse("person_detail", args=[self.mentor.pk]))
+        self.assertContains(response, "Verified")
+        self.assertContains(response, "Request mentorship")
