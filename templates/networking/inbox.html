@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Messages | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">Stay in touch</p>
+        <h1>Messages</h1>
+        <p>You can message people once a connection, mentorship or investor request is accepted.</p>
+    </div>
+    {% if conversations %}
+        <div class="notification-list">
+            {% for conversation in conversations %}
+                <a class="notification-card {% if conversation.unread %}notification-unread{% endif %}" href="{% url 'conversation' conversation.pk %}">
+                    <div class="notification-copy">
+                        <p><strong>{{ conversation.partner.display_name }}</strong> · {{ conversation.partner.get_role_display }}{% if conversation.unread %} <span class="notification-count">{{ conversation.unread }}</span>{% endif %}</p>
+                        <small>{% if conversation.last_message %}{% if conversation.last_message.sender == user %}You: {% endif %}{{ conversation.last_message.content|truncatechars:80 }} · {{ conversation.last_message.created_at|timesince }} ago{% else %}No messages yet — say hello.{% endif %}</small>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state"><h2>No conversations yet.</h2><p>Connect with someone to start messaging.</p><a class="button button-small" href="{% url 'people_directory' %}">Search people</a></div>
+    {% endif %}
+</section>
+{% endblock %}
