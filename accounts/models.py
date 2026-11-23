@@ -31,5 +31,26 @@ class User(AbstractUser):
     investor_type = models.CharField(max_length=80, blank=True)
     website = models.URLField(blank=True)
 
+    # Administrator verification of mentor/investor profiles (FR-25, NFR-04)
+    is_verified = models.BooleanField(default=False)
+
+    # Mentor and investor matching (SRS FR-10 to FR-12)
+    interest_sectors = models.CharField(
+        "Sectors of interest",
+        max_length=200,
+        blank=True,
+        help_text="Comma-separated sectors you support, e.g. Agriculture, Fintech.",
+    )
+
+    @property
+    def display_name(self):
+        return self.get_full_name() or self.username
+
+    @property
+    def sector_label(self):
+        if self.role == self.Role.ENTREPRENEUR:
+            return self.business_sector
+        return self.interest_sectors
+
     def __str__(self):
         return f"{self.get_full_name() or self.username} ({self.get_role_display()})"
