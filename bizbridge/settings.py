@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "mentorships",
     "investor_connections",
     "notifications",
+    "networking",
 ]
 
 MIDDLEWARE = [
@@ -79,6 +80,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "notifications.context_processors.unread_notification_count",
+                "networking.context_processors.unread_message_count",
             ],
         },
     },
