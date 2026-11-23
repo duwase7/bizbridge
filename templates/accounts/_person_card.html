@@ -1,0 +1,17 @@
+<article class="opportunity-card">
+    <span class="feature-number">{{ person.get_role_display }}{% if person.is_verified %} <span class="verified-badge" title="Verified by BizBridge">✔ Verified</span>{% endif %}</span>
+    <h2>{{ person.display_name }}</h2>
+    {% if person.role == "entrepreneur" and person.business_name %}
+        <p class="opportunity-provider">{{ person.business_name }}</p>
+    {% elif person.organization %}
+        <p class="opportunity-provider">{{ person.organization }}</p>
+    {% endif %}
+    <div class="opportunity-meta">
+        {% if person.sector_label %}<span>{{ person.sector_label }}</span>{% endif %}
+        {% if person.business_stage %}<span>{{ person.business_stage }}</span>{% endif %}
+        {% if person.location %}<span>{{ person.location }}</span>{% endif %}
+        {% for reason in person.match_reasons %}<span class="match-tag">{{ reason }}</span>{% endfor %}
+    </div>
+    <p>{% if person.role == "mentor" and person.mentor_expertise %}Expertise: {{ person.mentor_expertise }}{% else %}{{ person.bio|default:person.business_description|default:"No biography added yet."|truncatewords:30 }}{% endif %}</p>
+    <a class="text-link" href="{% url 'person_detail' person.pk %}">View profile →</a>
+</article>

@@ -1,0 +1,9 @@
+<article class="opportunity-card">
+    <span class="feature-number">{{ partner.get_role_display }}{% if partner.is_verified %} <span class="verified-badge">✔ Verified</span>{% endif %}</span>
+    <h2>{{ partner.display_name }}</h2>
+    <p class="opportunity-provider">{{ partner.organization|default:partner.business_name|default:"" }}</p>
+    <div class="dashboard-actions">
+        <a class="button button-small" href="{% url 'conversation' connection.pk %}">Message</a>
+        <a class="text-link" href="{% url 'person_detail' partner.pk %}">View profile →</a>
+    </div>
+</article>

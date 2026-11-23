@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from accounts.models import User
+from networking.models import Connection
 from notifications.models import Notification
 
 from .forms import MentorshipRequestForm
@@ -144,6 +145,8 @@ def respond_to_mentorship_request(request, request_id):
 
     mentorship_request.status = decision
     mentorship_request.save(update_fields=("status", "updated_at"))
+    if decision == "accepted":
+        Connection.ensure_accepted(mentorship_request.entrepreneur, request.user)
     mentor_name = request.user.get_full_name() or request.user.username
     Notification.objects.create(
         recipient=mentorship_request.entrepreneur,

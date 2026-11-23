@@ -7,8 +7,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", account_views.home, name="home"),
     path("accounts/", include("accounts.urls")),
+    path("people/", account_views.people_directory, name="people_directory"),
+    path("people/<int:user_id>/", account_views.person_detail, name="person_detail"),
     path("opportunities/", include("opportunities.urls")),
     path("mentorship/", include("mentorships.urls")),
     path("connections/", include("investor_connections.urls")),
     path("notifications/", include("notifications.urls")),
+    path("", include("networking.urls")),
 ]

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ partner.display_name }} | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page detail-page">
+    <a class="text-link" href="{% url 'inbox' %}">← All messages</a>
+    <div class="detail-card">
+        <span class="feature-number">{{ partner.get_role_display }}</span>
+        <h1><a href="{% url 'person_detail' partner.pk %}">{{ partner.display_name }}</a></h1>
+        <p class="safety-note">BizBridge does not handle payments. Verify people carefully before sharing money or private information.</p>
+        <form method="post" class="message-form">
+            {% csrf_token %}
+            <label for="{{ form.content.id_for_label }}">{{ form.content.label }}</label>
+            {{ form.content }}
+            {% for error in form.content.errors %}<small class="error-text">{{ error }}</small>{% endfor %}
+            <button class="button button-small" type="submit">Send</button>
+        </form>
+        <p class="results-label">Newest first</p>
+        <div class="message-thread">
+            {% for chat in chat_messages %}
+                <div class="chat-bubble {% if chat.sender == user %}chat-mine{% endif %}">
+                    <small>{% if chat.sender == user %}You{% else %}{{ chat.sender.display_name }}{% endif %} · {{ chat.created_at|date:"j M Y, H:i" }}</small>
+                    <p>{{ chat.content|linebreaksbr }}</p>
+                </div>
+            {% empty %}
+                <p class="results-label">No messages yet. Start the conversation above.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

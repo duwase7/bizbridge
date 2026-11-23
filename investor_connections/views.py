@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from accounts.models import User
+from networking.models import Connection
 from notifications.models import Notification
 
 from .forms import InvestorConnectionRequestForm
@@ -165,6 +166,8 @@ def respond_to_investor_request(request, request_id):
 
     connection_request.status = decision
     connection_request.save(update_fields=("status", "updated_at"))
+    if decision == "accepted":
+        Connection.ensure_accepted(connection_request.entrepreneur, request.user)
     investor_name = request.user.get_full_name() or request.user.username
     Notification.objects.create(
         recipient=connection_request.entrepreneur,

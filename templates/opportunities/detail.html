@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ opportunity.title }} | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page detail-page">
+    <a class="text-link" href="{% url 'opportunity_list' %}">← Back to opportunities</a>
+    <article class="detail-card">
+        <span class="feature-number">{{ opportunity.get_category_display }}</span>
+        <h1>{{ opportunity.title }}</h1>
+        <p class="opportunity-provider">Offered by {{ opportunity.provider }}</p>
+        <div class="opportunity-meta">
+            {% if opportunity.sector %}<span>Sector: {{ opportunity.sector }}</span>{% endif %}
+            {% if opportunity.location %}<span>Location: {{ opportunity.location }}</span>{% endif %}
+            {% if opportunity.deadline %}<span>Deadline: {{ opportunity.deadline|date:"j M Y" }}</span>{% else %}<span>Open / rolling</span>{% endif %}
+            {% if opportunity.is_expired %}<span class="status-declined">Expired</span>{% endif %}
+        </div>
+        <div class="detail-body">{{ opportunity.description|linebreaks }}</div>
+        {% if opportunity.application_url %}
+            <a class="button" href="{{ opportunity.application_url }}" target="_blank" rel="noopener noreferrer">Apply on provider site ↗</a>
+        {% endif %}
+        <p class="safety-note">BizBridge never asks for payment to apply. Always confirm an opportunity with the provider before sharing money or personal documents.</p>
+    </article>
+</section>
+{% endblock %}
