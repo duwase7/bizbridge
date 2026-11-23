@@ -2,163 +2,163 @@
 
 **An Entrepreneurship Support and Connection Platform**
 
-BizBridge is a web platform designed to help entrepreneurs discover mentors, investors, partners and relevant business opportunities. The current prototype includes role-aware accounts, role-specific profiles, a searchable opportunity directory, and entrepreneur-to-mentor and entrepreneur-to-investor request workflows.
+BizBridge is a web platform that helps entrepreneurs in Rwanda find mentors, investors, business partners and opportunities (funding, training, competitions, incubators and partnerships) in one place. Entrepreneurs no longer need to search across many websites, social media pages and WhatsApp groups.
+
+- **Live demo:** _add your Render URL here after deploying, e.g. `https://bizbridge.onrender.com`_
+- **SRS / system design:** _add the link to your SRS document here_
+- **Repository:** https://github.com/duwase7/bizbridge
+
+## Problem and solution
+
+Business support in Rwanda is spread across many organisations and platforms, so it is hard for entrepreneurs to find the right mentor, investor or opportunity. Research (UNDP AGUKA tracer study, Access to Finance Rwanda FinMap 2024, NISR IBES) shows that mentorship, networks and access to finance are what entrepreneurs need most. BizBridge brings these people and opportunities together and matches them by **sector, stage and location**.
+
+## Users (actors)
+
+| Actor | What they can do |
+|---|---|
+| Visitor | View the home and help pages, register, log in, reset a password |
+| Entrepreneur | Build a business profile, search mentors, investors, partners and opportunities, see recommendations, send connection, mentorship and investor requests, message connections, receive notifications |
+| Mentor | Build an expertise profile, search businesses, accept or reject mentorship and connection requests, message connections |
+| Investor | Build an organisation profile, search businesses by sector, location and stage, send and accept requests, message connections |
+| Administrator | Manage accounts (suspend, reactivate, delete), verify mentor and investor profiles, manage opportunities, view activity reports and export them as CSV |
+
+## Features mapped to the SRS
+
+| SRS | Feature | Where |
+|---|---|---|
+| FR-01, FR-02 | Register with name, email, password and role. Duplicate emails and passwords shorter than 8 characters are rejected | `/accounts/signup/` |
+| FR-03 | Log in with **email or username**, and log out | `/accounts/login/` |
+| FR-04, NFR-07 | Role-based menus and permissions (each role sees only its own features) | all pages |
+| FR-05 | Reset a forgotten password by email link | `/accounts/password-reset/` |
+| FR-06 to FR-09 | Role-specific profiles: business details, mentor expertise and availability, investor type and website, sectors of interest | `/accounts/profile/` |
+| FR-10, FR-11 | Search people with filters for keyword, type, sector, location and stage. Search opportunities with filters for keyword, category, sector and location | `/people/`, `/opportunities/` |
+| FR-12 | Ranked rule-based recommendations of people and opportunities on the dashboard | `/accounts/dashboard/` |
+| FR-13 | Full profile and opportunity detail pages | `/people/<id>/`, `/opportunities/<id>/` |
+| FR-14, BR-04 | Administrator creates, edits and removes opportunities | `/manage/opportunities/` |
+| FR-15, BR-07 | Opportunities past their deadline are hidden automatically | |
+| FR-16, FR-17, BR-03 | Send and answer connection requests (pending, accepted, declined). Self-requests and duplicate requests are blocked | `/network/` |
+| FR-18, FR-19, BR-05 | Request mentorship on a topic. The mentor accepts or rejects it | `/mentorship/` |
+| FR-20, FR-21, BR-02 | Messaging only between accepted connections, with history shown newest first | `/messages/` |
+| FR-22, FR-23 | Notifications for requests, responses, messages and verification. Mark one or all as read | `/notifications/` |
+| FR-24, BR-06 | Administrator views, suspends, reactivates and deletes accounts. Suspended users cannot log in | `/manage/users/` |
+| FR-25, NFR-04 | Administrator verifies mentor and investor profiles, which then show a **✔ Verified** badge | `/manage/users/` |
+| FR-26 | Activity report: registrations, requests, acceptance rate, messages, opportunity views and pilot targets. CSV export | `/manage/` |
+| NFR-05 | Warning that BizBridge never takes payments (footer, messages, help) | |
+| NFR-06 | Hashed passwords. Sessions expire after 30 minutes of inactivity | |
+| NFR-08 | Django form validation, ORM queries (protect against SQL injection), auto-escaped templates (protect against XSS) and CSRF protection | |
+| NFR-09 | Members can delete their own account and data | Edit profile → Delete my account |
+| NFR-14 | Modular apps, Git history and 89 automated tests run in GitHub Actions | |
+| 2.6 User documentation | In-app help page and FAQ | `/help/` |
+
+**Out of scope for version 1.0 (as stated in the SRS):** payments, video calls, native mobile apps and AI matching.
 
 ## Technology
 
-- Python 3.12
-- Django 5.1+
-- HTML and CSS
-- SQLite for local development
-- PostgreSQL for hosted deployment
-- Gunicorn and WhiteNoise for production serving
+- Python 3.12 and Django 5
+- HTML and CSS (responsive, no JavaScript framework)
+- SQLite for local development and PostgreSQL in production
+- Gunicorn and WhiteNoise, deployed on Render
 
-## Features in this milestone
+## Project structure
 
-- Public landing page introducing BizBridge and its user groups.
-- Account registration for Entrepreneurs, Mentors and Investors.
-- Login and logout using Django authentication.
-- Protected dashboard showing the signed-in user's role and profile details.
-- Shared profile fields: name, email, organisation, location and biography.
-- Entrepreneur-specific profile fields: business name, sector, stage and description.
-- Mentor-specific profile fields: areas of expertise and availability.
-- Investor-specific profile fields: investor type and website.
-- Profile forms display only the fields relevant to the signed-in user's role; users cannot change their assigned role.
-- Opportunity directory, keyword search and category filters; inactive opportunities are hidden.
-- Administrators can add, update, activate and deactivate opportunities through Django admin.
-- Entrepreneurs can browse mentor profiles and send mentorship requests; mentors can accept or reject requests.
-- Entrepreneurs can browse and search investor profiles and send introductions; investors can accept or decline requests.
-- Request status tracking, role-based permissions and duplicate-request protection.
-- In-app notifications when mentorship or investor requests are received or accepted/declined, with unread counts and read controls.
-- Optional, explicit demo-data command creates sample role-based accounts, opportunities, requests and notifications; it never runs automatically.
-- Automated tests cover account access, profile editing, opportunity discovery, mentorship requests, investor connection permissions/status changes and demo-data seeding.
-
-## Setup and run locally
-
-### 1. Install Python
-
-Python 3.12 is recommended. Confirm it is available:
-
-```bash
-python3 --version
+```
+accounts/              users, profiles, search, matching/recommendations, password reset, demo data command
+opportunities/         opportunity model, search and detail pages
+mentorships/           entrepreneur → mentor requests
+investor_connections/  entrepreneur → investor introductions
+networking/            general connection requests and messaging
+notifications/         in-app notifications
+adminpanel/            administrator console: accounts, verification, opportunities, reports
+templates/, static/    HTML templates and CSS
 ```
 
-### 2. Clone the repository
+## Run it locally (step by step)
 
-```bash
-git clone https://github.com/duwase7/bizbridge.git
-cd bizbridge
-```
+1. **Install Python 3.12+** from https://www.python.org/downloads/ and check it is installed:
+   ```bash
+   python3 --version
+   ```
+2. **Install Git** from https://git-scm.com/downloads, then clone the project:
+   ```bash
+   git clone https://github.com/duwase7/bizbridge.git
+   cd bizbridge
+   ```
+3. **Create and activate a virtual environment.**
+   macOS/Linux:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+   Windows (PowerShell):
+   ```powershell
+   py -m venv .venv
+   .venv\Scripts\Activate.ps1
+   ```
+4. **Install the dependencies:**
+   ```bash
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+5. **(Optional) Create a `.env` file.** No `.env` is needed locally because the defaults use SQLite and debug mode. To customise settings:
+   ```bash
+   cp .env.example .env
+   ```
+6. **Create the database tables:**
+   ```bash
+   python manage.py migrate
+   ```
+7. **Load the demo data.** This creates five accounts, sample opportunities, requests and messages:
+   ```bash
+   python manage.py seed_demo_data --password "DemoAccess!2026"
+   ```
+8. **(Optional) Create your own superuser** for the Django admin at `/admin/`:
+   ```bash
+   python manage.py createsuperuser
+   ```
+9. **Start the server:**
+   ```bash
+   python manage.py runserver
+   ```
+   Open http://127.0.0.1:8000/ in your browser.
+10. **Run the tests:**
+    ```bash
+    python manage.py test
+    ```
 
-### 3. Create and activate a virtual environment
+### Demo accounts
 
-macOS/Linux:
+After step 7, every account uses the password you passed with `--password`. You can log in with either the username or the email.
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
+| Username | Role | What to try |
+|---|---|---|
+| `demo_founder` | Entrepreneur (agritech, Kigali) | Dashboard recommendations, search, mentorship and investor requests, messages |
+| `demo_partner` | Entrepreneur (logistics) | Already connected to the founder, with existing messages |
+| `demo_mentor` | Mentor (verified) | Accept or reject the pending mentorship request |
+| `demo_investor` | Investor (verified) | Search businesses, answer the pending introduction |
+| `demo_admin` | Administrator | `/manage/`: reports, verify, suspend, opportunities |
 
-Windows PowerShell:
+All demo opportunities are labelled `[DEMO]`. One of them has already expired, to show that expired opportunities are hidden.
 
-```powershell
-py -m venv .venv
-.venv\\Scripts\\Activate.ps1
-```
+### Password reset emails
 
-### 4. Install dependencies and migrate the database
+Without SMTP settings, the reset email (and its link) is printed in the terminal or server log. To send real emails, set `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` and `DEFAULT_FROM_EMAIL` (see `.env.example`). For example, you can use a Gmail app password.
 
-```bash
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python manage.py migrate
-```
+## Deploy on Render (free)
 
-The default local database is SQLite; a separate database server is not required.
+The repository includes a Render Blueprint (`render.yaml`). It creates a Python web service and a PostgreSQL database.
 
-### 5. Create an administrator (optional) and run the application
+1. Make sure everything is merged into `main` on GitHub.
+2. Go to https://dashboard.render.com, sign in with GitHub, and click **New → Blueprint**.
+3. Select the `duwase7/bizbridge` repository and click **Connect**.
+4. Render asks for **`DEMO_PASSWORD`**. Enter a strong password (for example `DemoAccess!2026`) to create the demo accounts automatically, or leave it empty to skip them.
+5. Click **Apply**. Wait 3–5 minutes until the `bizbridge` service shows **Live**.
+6. Open the `https://bizbridge-xxxx.onrender.com` URL shown on the service page and log in with a demo account.
+7. (Optional) To create a real superuser, add `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL` and `DJANGO_SUPERUSER_PASSWORD` under **Environment**, then redeploy.
 
-```bash
-python manage.py createsuperuser
-python manage.py runserver
-```
+**Free-plan notes:** the service sleeps after 15 minutes without traffic, so the first visit can take about a minute to load. Free Render PostgreSQL databases expire after 30 days. For a longer-lived database, create a free Supabase project and set the web service's `DATABASE_URL` to Supabase's **Session pooler** connection string.
 
-Open http://127.0.0.1:8000/.
+## Known limitations
 
-### 6. Run automated tests
-
-```bash
-python manage.py test
-python manage.py makemigrations --check --dry-run
-```
-
-## Main pages
-
-- Landing page: `/`
-- Sign up: `/accounts/signup/`
-- Log in: `/accounts/login/`
-- Dashboard: `/accounts/dashboard/`
-- Edit role-specific profile: `/accounts/profile/`
-- Discover opportunities: `/opportunities/`
-- Find mentors: `/mentorship/mentors/`
-- Mentorship requests: `/mentorship/requests/`
-- Find investors: `/connections/investors/`
-- Investor connection requests: `/connections/requests/`
-- Notifications: `/notifications/`
-- Admin: `/admin/`
-
-## Managing opportunities
-
-Create a staff or superuser account and sign in at `/admin/`. Use the Opportunities section to add or update opportunity information, including its category, sector, location, deadline and application link.
-
-## Preparing demonstration data
-
-For a walkthrough, you can create three sample accounts (entrepreneur, mentor and investor), three clearly labelled sample opportunities, one pending mentorship request, one pending investor connection request and their notifications:
-
-```bash
-python manage.py seed_demo_data --password "Choose-A-Strong-Demo-Password"
-```
-
-The password must meet the project's Django password validators. The command prints the three usernames but does not print the password. The default usernames are `demo_founder`, `demo_mentor` and `demo_investor`. All sample opportunities are labelled `[DEMO]` and are not real funding or application calls.
-
-Useful options:
-
-- `--prefix mydemo` uses `mydemo_founder`, `mydemo_mentor` and `mydemo_investor` instead of the default usernames.
-- `--reset-passwords` explicitly resets passwords for existing matching demo accounts. Without this option, rerunning the command preserves existing passwords and profile edits.
-
-On the first run, both requests are pending and the mentor and investor receive unread notifications. Rerunning the command reuses existing records and preserves any request decisions or notification read states. It does not delete data, create an administrator or run during deployment. It refuses to repurpose an existing username with a different role or an administrative account. Run it only when you intentionally want sample records in a database you can access, and do not reuse a personal or production password.
-
-**Important for Render Free:** Free web services do not provide Shell or SSH access, so this command cannot be run directly against the hosted Free service. It is available for local development or a service plan that includes shell access. To populate the public Free deployment instead:
-
-1. In the Render service's Environment settings, set `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL` and a strong, unique `DJANGO_SUPERUSER_PASSWORD`. Do not put these values in GitHub.
-2. Trigger a redeploy. The repository's `build.sh` runs `bootstrap_admin` after migrations, which creates the admin account if that username does not already exist.
-3. Sign in at `/admin/` and add a few clearly labelled demo opportunities.
-4. Register one entrepreneur, one mentor and one investor through `/accounts/signup/`. Use the entrepreneur account to send mentorship and investor requests, then sign in as the mentor and investor to respond and view notifications.
-
-## Deployment
-
-The repository includes a Render Blueprint in `render.yaml` for a Python web service and PostgreSQL database.
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/duwase7/bizbridge)
-
-To deploy the current `main` branch:
-
-1. Merge the features you want included in the demo before deploying. The button deploys the repository's default branch.
-2. Click **Deploy to Render** and sign in to Render. Connect GitHub if Render asks for permission.
-3. Review the Blueprint. It should create a `bizbridge` web service and a `bizbridge-db` PostgreSQL database in Frankfurt, both on the Free plan.
-4. Click **Apply** or **Deploy Blueprint** to provision the resources.
-5. Wait for the web service's deploy status to show **Live**, then open its generated `.onrender.com` URL and test registration, login, dashboards and the main workflows.
-
-The Blueprint generates the `SECRET_KEY` and connects the web service to PostgreSQL. Do not add secrets or database passwords to GitHub.
-
-**Free-plan limitations:** Render free web services spin down after 15 minutes without traffic and can take about a minute to wake on the next request. Free Render PostgreSQL databases expire 30 days after creation; export any demo data you need before the database expires. These limits are suitable for a short prototype demonstration, not long-term production data storage. See [Render's free-instance limits](https://render.com/docs/free) and [Blueprint setup guide](https://render.com/docs/infrastructure-as-code).
-
-A public deployment URL is not claimed until the Render service has deployed successfully and the live site has been opened and checked.
-
-## Current scope
-
-The prototype implements account registration and access, role-specific profile editing, opportunity discovery, mentorship requests, investor connection requests and in-app notifications. The SRS also specifies direct messaging, administrator verification, account suspension and activity reports. These remain outstanding implementation work and should not be described as completed until implemented and tested.
-
-## Repository
-
-https://github.com/duwase7/bizbridge
+- Email notifications are in-app. Email is used only for password reset.
+- Matching is rule-based (sector, stage, location). AI matching is planned for a later version.
+- Database backups (NFR-13) depend on the hosting plan. The free tier has no automatic backups.
