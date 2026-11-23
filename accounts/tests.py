@@ -2,8 +2,14 @@ import os
 from unittest.mock import patch
 
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import TestCase
 from django.urls import reverse
+
+from investor_connections.models import InvestorConnectionRequest
+from mentorships.models import MentorshipRequest
+from notifications.models import Notification
+from opportunities.models import Opportunity
 
 from .forms import ProfileForm
 from .models import User
@@ -177,3 +183,100 @@ class BootstrapAdminCommandTests(TestCase):
         self.assertFalse(existing_user.is_staff)
         self.assertFalse(existing_user.is_superuser)
         self.assertTrue(existing_user.check_password("ExistingPass!2026"))
+
+
+
+class DemoDataCommandTests(TestCase):
+    password = "DemoAccess!2026"
+
+    def seed_demo_data(self, **options):
+        call_command("seed_demo_data", password=self.password, **options)
+
+    def test_command_creates_demo_accounts_and_workflows(self):
+        self.seed_demo_data()
+
+        founder = User.objects.get(username="demo_founder")
+        mentor = User.objects.get(username="demo_mentor")
+        investor = User.objects.get(username="demo_investor")
+
+        self.assertEqual(founder.role, User.Role.ENTREPRENEUR)
+        self.assertEqual(mentor.role, User.Role.MENTOR)
+        self.assertEqual(investor.role, User.Role.INVESTOR)
+        self.assertTrue(founder.check_password(self.password))
+        self.assertTrue(mentor.check_password(self.password))
+        self.assertTrue(investor.check_password(self.password))
+
+        self.assertEqual(
+            Opportunity.objects.filter(provider="BizBridge Demo Data").count(),
+            3,
+        )
+        self.assertEqual(MentorshipRequest.objects.count(), 1)
+        self.assertEqual(InvestorConnectionRequest.objects.count(), 1)
+        self.assertEqual(Notification.objects.count(), 2)
+        self.assertEqual(
+            MentorshipRequest.objects.get().status,
+            MentorshipRequest.Status.PENDING,
+        )
+        self.assertEqual(
+            InvestorConnectionRequest.objects.get().status,
+            InvestorConnectionRequest.Status.PENDING,
+        )
+
+    def test_command_is_idempotent_and_does_not_reset_passwords_by_default(self):
+        self.seed_demo_data()
+        founder = User.objects.get(username="demo_founder")
+        founder.bio = "A profile edit that should be preserved."
+        founder.set_password("UpdatedDemoPass!2026")
+        founder.save()
+
+        self.seed_demo_data()
+
+        founder.refresh_from_db()
+        self.assertEqual(founder.bio, "A profile edit that should be preserved.")
+        self.assertTrue(founder.check_password("UpdatedDemoPass!2026"))
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(
+            Opportunity.objects.filter(provider="BizBridge Demo Data").count(),
+            3,
+        )
+        self.assertEqual(MentorshipRequest.objects.count(), 1)
+        self.assertEqual(InvestorConnectionRequest.objects.count(), 1)
+        self.assertEqual(Notification.objects.count(), 2)
+
+        self.seed_demo_data(reset_passwords=True)
+        founder.refresh_from_db()
+        self.assertTrue(founder.check_password(self.password))
+
+    def test_command_refuses_to_repurpose_an_account_with_another_role(self):
+        User.objects.create_user(
+            username="demo_mentor",
+            password="ExistingPass!2026",
+            role=User.Role.ENTREPRENEUR,
+        )
+
+        with self.assertRaises(CommandError):
+            self.seed_demo_data()
+
+        self.assertFalse(User.objects.filter(username="demo_founder").exists())
+        self.assertEqual(User.objects.count(), 1)
+
+    def test_command_rejects_an_unsafe_username_prefix(self):
+        with self.assertRaises(CommandError):
+            self.seed_demo_data(prefix="../unsafe")
+
+
+    def test_command_refuses_to_repurpose_an_administrative_account(self):
+        User.objects.create_user(
+            username="demo_investor",
+            password="ExistingPass!2026",
+            role=User.Role.INVESTOR,
+            is_staff=True,
+        )
+
+        with self.assertRaises(CommandError):
+            self.seed_demo_data()
+
+        self.assertFalse(User.objects.filter(username="demo_founder").exists())
+        investor = User.objects.get(username="demo_investor")
+        self.assertTrue(investor.is_staff)
+        self.assertTrue(investor.check_password("ExistingPass!2026"))
