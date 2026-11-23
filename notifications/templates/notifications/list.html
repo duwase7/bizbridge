@@ -4,7 +4,10 @@
 <section class="dashboard">
     <p class="eyebrow">Stay up to date</p>
     <h1>Your notifications</h1>
-    <p class="section-description">Updates about mentorship and investor requests connected to your account.</p>
+    <p class="section-description">Updates about connection, mentorship and investor requests, new messages and profile verification.</p>
+    {% if unread_notification_count %}
+        <form method="post" action="{% url 'mark_all_notifications_read' %}">{% csrf_token %}<button class="button button-small button-secondary" type="submit">Mark all as read</button></form>
+    {% endif %}
     <div class="notification-list">
         {% for notification in notifications %}
             <article class="notification-card{% if not notification.is_read %} notification-unread{% endif %}">
