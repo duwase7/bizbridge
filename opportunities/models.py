@@ -6,6 +6,7 @@ class Opportunity(models.Model):
         FUNDING = "funding", "Funding"
         TRAINING = "training", "Training"
         COMPETITION = "competition", "Competition"
+        INCUBATOR = "incubator", "Incubator / accelerator"
         MENTORSHIP = "mentorship", "Mentorship"
         PARTNERSHIP = "partnership", "Partnership"
         OTHER = "other", "Other"
@@ -23,6 +24,7 @@ class Opportunity(models.Model):
     deadline = models.DateField(blank=True, null=True)
     application_url = models.URLField(blank=True)
     is_active = models.BooleanField(default=True)
+    view_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -30,3 +32,19 @@ class Opportunity(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def is_expired(self):
+        from django.utils import timezone
+
+        return bool(self.deadline and self.deadline < timezone.localdate())
+
+    @classmethod
+    def visible(cls):
+        """Active opportunities whose deadline has not passed (FR-15, BR-07)."""
+        from django.db.models import Q
+        from django.utils import timezone
+
+        return cls.objects.filter(is_active=True).filter(
+            Q(deadline__isnull=True) | Q(deadline__gte=timezone.localdate())
+        )
