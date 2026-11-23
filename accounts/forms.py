@@ -53,6 +53,7 @@ class ProfileForm(forms.ModelForm):
             "mentor_availability",
             "investor_type",
             "website",
+            "interest_sectors",
         )
         widgets = {
             "bio": forms.Textarea(attrs={"rows": 4}),
@@ -69,8 +70,8 @@ class ProfileForm(forms.ModelForm):
                 "business_stage",
                 "business_description",
             ),
-            User.Role.MENTOR: ("mentor_expertise", "mentor_availability"),
-            User.Role.INVESTOR: ("investor_type", "website"),
+            User.Role.MENTOR: ("mentor_expertise", "mentor_availability", "interest_sectors"),
+            User.Role.INVESTOR: ("investor_type", "website", "interest_sectors"),
         }
         visible_fields = set(role_fields.get(role, ()))
         all_role_fields = {
@@ -82,6 +83,7 @@ class ProfileForm(forms.ModelForm):
             "mentor_availability",
             "investor_type",
             "website",
+            "interest_sectors",
         }
         for field_name in all_role_fields - visible_fields:
             self.fields.pop(field_name)
