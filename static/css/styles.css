@@ -45,3 +45,18 @@
 .message-thread{display:flex;flex-direction:column;gap:10px}.chat-bubble{max-width:80%;padding:10px 14px;border-radius:12px;background:#f1f4f2}.chat-bubble p{margin:4px 0 0}.chat-bubble small{color:var(--muted)}.chat-mine{align-self:flex-end;background:var(--mint)}
 a.notification-card{display:flex}
 .connect-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.connect-form input{padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit}
+
+/* Administrator console */
+.admin-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 24px}.admin-tabs a{padding:9px 16px;border:1px solid var(--line);border-radius:999px;background:white;font-weight:600;color:#52635a}.admin-tabs a.active{background:var(--green);border-color:var(--green);color:white}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}.stat-tile{padding:18px;border:1px solid var(--line);border-radius:12px;background:white;display:flex;flex-direction:column}.stat-tile small{color:var(--muted);font-weight:700;text-transform:uppercase;font-size:.72rem;letter-spacing:.06em}.stat-tile strong{font-family:Manrope,sans-serif;font-size:2rem}.stat-tile span{color:var(--muted);font-size:.85rem}
+.admin-columns{display:grid;grid-template-columns:1fr 1fr;gap:18px}.admin-columns .detail-card{margin-top:0}
+.progress-row{display:flex;justify-content:space-between;font-size:.9rem;margin-top:12px}.progress{height:10px;border-radius:999px;background:#edf1ee;overflow:hidden}.progress div{height:100%;background:var(--green)}
+.table-wrap{overflow-x:auto}.admin-table{width:100%;border-collapse:collapse;background:white;border:1px solid var(--line);border-radius:12px;font-size:.9rem;margin-top:12px}.admin-table th,.admin-table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}.admin-table th{background:#f3f7f4}
+.admin-actions form{display:flex;flex-wrap:wrap;gap:6px}.admin-actions{display:flex;flex-wrap:wrap;gap:6px}.admin-actions .button-small{padding:6px 11px;font-size:.8rem}
+.button-danger{background:#b3261e}.button-danger:hover{background:#8c1d18}
+@media(max-width:800px){.admin-columns{grid-template-columns:1fr}}
+
+/* Help, safety and account pages */
+.help-content h2{font-family:Manrope,sans-serif;margin-top:26px}.help-content details{border-bottom:1px solid var(--line);padding:10px 0}.help-content summary{cursor:pointer;font-weight:700}
+.footer-warning{max-width:640px;margin:8px auto;font-size:.85rem;color:#8a5a12}.danger-link{color:#b3261e;font-weight:600}
+.site-footer .footer-warning{margin:8px auto}.detail-card>.section-title:first-child{margin-top:0}

@@ -27,3 +27,10 @@ def mark_notification_read(request, notification_id):
         notification.is_read = True
         notification.save(update_fields=("is_read",))
     return redirect("notification_list")
+
+
+@login_required
+@require_POST
+def mark_all_notifications_read(request):
+    request.user.notifications.filter(is_read=False).update(is_read=True)
+    return redirect("notification_list")

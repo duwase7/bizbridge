@@ -5,7 +5,9 @@ from accounts import views as account_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("manage/", include("adminpanel.urls")),
     path("", account_views.home, name="home"),
+    path("help/", account_views.help_page, name="help"),
     path("accounts/", include("accounts.urls")),
     path("people/", account_views.people_directory, name="people_directory"),
     path("people/<int:user_id>/", account_views.person_detail, name="person_detail"),

@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from .models import User
 
@@ -96,3 +97,41 @@ class ProfileForm(forms.ModelForm):
         if existing_users.exists():
             raise forms.ValidationError("An account with this email already exists.")
         return email
+
+
+class LoginForm(AuthenticationForm):
+    """Email-or-username login with a clear message for suspended accounts (BR-06)."""
+
+    username = forms.CharField(label="Email or username", max_length=254)
+
+    error_messages = {
+        **AuthenticationForm.error_messages,
+        "suspended": "This account has been suspended. Please contact the BizBridge administrator.",
+    }
+
+    def clean(self):
+        identifier = (self.cleaned_data.get("username") or "").strip()
+        password = self.cleaned_data.get("password")
+        if identifier and password:
+            UserModel = get_user_model()
+            lookup = {"email__iexact": identifier} if "@" in identifier else {"username": identifier}
+            candidate = UserModel.objects.filter(**lookup).first()
+            if candidate and not candidate.is_active and candidate.check_password(password):
+                raise forms.ValidationError(self.error_messages["suspended"], code="suspended")
+        return super().clean()
+
+
+class DeleteAccountForm(forms.Form):
+    password = forms.CharField(
+        label="Confirm your password", widget=forms.PasswordInput(attrs={"autocomplete": "current-password"})
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        if not self.user.check_password(password):
+            raise forms.ValidationError("That password is not correct.")
+        return password

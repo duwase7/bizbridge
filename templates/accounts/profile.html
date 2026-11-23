@@ -26,6 +26,7 @@
         {% endfor %}
         <button class="button button-full" type="submit">Save changes</button>
         <p class="form-switch"><a href="{% url 'dashboard' %}">Return to dashboard</a></p>
+        <p class="form-switch"><a class="danger-link" href="{% url 'delete_account' %}">Delete my account</a></p>
     </form>
 </section>
 {% endblock %}

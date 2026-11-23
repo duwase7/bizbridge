@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Administrator | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">Administrator</p>
+        <h1>Platform activity &amp; reports</h1>
+        <p>Monitor registrations, connection requests and opportunity views. Download the report as CSV for sharing.</p>
+    </div>
+    {% include "adminpanel/_tabs.html" with tab="reports" %}
+
+    <div class="stat-grid">
+        <div class="stat-tile"><small>Members</small><strong>{{ report.total_members }}</strong><span>{{ report.new_last_7_days }} new this week</span></div>
+        <div class="stat-tile"><small>Entrepreneurs</small><strong>{{ report.entrepreneurs }}</strong><span>Mentors {{ report.mentors }} · Investors {{ report.investors }}</span></div>
+        <div class="stat-tile"><small>Requests sent</small><strong>{{ report.all_requests }}</strong><span>{{ report.acceptance_rate }}% accepted</span></div>
+        <div class="stat-tile"><small>Messages</small><strong>{{ report.messages }}</strong><span>between connected users</span></div>
+        <div class="stat-tile"><small>Live opportunities</small><strong>{{ report.opportunities_live }}</strong><span>{{ report.opportunity_views }} total views</span></div>
+        <div class="stat-tile"><small>Needs attention</small><strong>{{ report.awaiting_verification }}</strong><span>profiles to verify · {{ report.suspended }} suspended</span></div>
+    </div>
+
+    <div class="admin-columns">
+        <div class="detail-card">
+            <h2 class="section-title">Pilot targets (hypothesis)</h2>
+            {% for label, value, goal, pct in report.targets %}
+                <div class="progress-row"><span>{{ label }}</span><span>{{ value }} / {{ goal }}</span></div>
+                <div class="progress" role="progressbar" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ label }}"><div style="width: {{ pct }}%"></div></div>
+            {% endfor %}
+            <div class="progress-row"><span>{{ report.target_rate.0 }}</span><span>{{ report.target_rate.1 }}% (target {{ report.target_rate.2 }}%)</span></div>
+        </div>
+        <div class="detail-card">
+            <h2 class="section-title">Requests by type</h2>
+            <table class="admin-table">
+                <thead><tr><th scope="col">Type</th><th scope="col">Sent</th><th scope="col">Accepted</th></tr></thead>
+                <tbody>
+                    <tr><td>Connections</td><td>{{ report.connections.total }}</td><td>{{ report.connections.accepted }}</td></tr>
+                    <tr><td>Mentorship</td><td>{{ report.mentorships.total }}</td><td>{{ report.mentorships.accepted }}</td></tr>
+                    <tr><td>Investor introductions</td><td>{{ report.investor_requests.total }}</td><td>{{ report.investor_requests.accepted }}</td></tr>
+                </tbody>
+            </table>
+            <h2 class="section-title">Most viewed opportunities</h2>
+            <table class="admin-table">
+                <thead><tr><th scope="col">Opportunity</th><th scope="col">Views</th></tr></thead>
+                <tbody>
+                    {% for opportunity in report.top_opportunities %}<tr><td>{{ opportunity.title }}</td><td>{{ opportunity.view_count }}</td></tr>{% empty %}<tr><td colspan="2">No opportunities yet.</td></tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="dashboard-actions">
+        <a class="button button-small" href="{% url 'admin_report_csv' %}">Download report (CSV)</a>
+        <a class="text-link" href="{% url 'admin:index' %}">Open Django admin →</a>
+    </div>
+</section>
+{% endblock %}

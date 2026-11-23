@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from investor_connections.models import InvestorConnectionRequest
 from mentorships.models import MentorshipRequest
+from networking.models import Connection, Message
 from notifications.models import Notification
 from opportunities.models import Opportunity
 
@@ -205,10 +206,18 @@ class DemoDataCommandTests(TestCase):
         self.assertTrue(founder.check_password(self.password))
         self.assertTrue(mentor.check_password(self.password))
         self.assertTrue(investor.check_password(self.password))
+        self.assertTrue(mentor.is_verified)
+        admin = User.objects.get(username="demo_admin")
+        self.assertTrue(admin.is_staff)
+        self.assertFalse(admin.is_superuser)
+        self.assertEqual(
+            Connection.between(founder, User.objects.get(username="demo_partner")).status,
+            Connection.Status.ACCEPTED,
+        )
 
         self.assertEqual(
             Opportunity.objects.filter(provider="BizBridge Demo Data").count(),
-            3,
+            5,
         )
         self.assertEqual(MentorshipRequest.objects.count(), 1)
         self.assertEqual(InvestorConnectionRequest.objects.count(), 1)
@@ -234,10 +243,11 @@ class DemoDataCommandTests(TestCase):
         founder.refresh_from_db()
         self.assertEqual(founder.bio, "A profile edit that should be preserved.")
         self.assertTrue(founder.check_password("UpdatedDemoPass!2026"))
-        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(User.objects.count(), 5)
+        self.assertEqual(Message.objects.count(), 2)
         self.assertEqual(
             Opportunity.objects.filter(provider="BizBridge Demo Data").count(),
-            3,
+            5,
         )
         self.assertEqual(MentorshipRequest.objects.count(), 1)
         self.assertEqual(InvestorConnectionRequest.objects.count(), 1)
@@ -334,3 +344,67 @@ class SearchAndRecommendationTests(TestCase):
         response = self.client.get(reverse("person_detail", args=[self.mentor.pk]))
         self.assertContains(response, "Verified")
         self.assertContains(response, "Request mentorship")
+
+
+
+class AccountSecurityTests(TestCase):
+    password = "StrongPass!2026"
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="aline", email="aline@example.com", password=self.password,
+            role=User.Role.ENTREPRENEUR,
+        )
+
+    def test_login_with_email(self):
+        response = self.client.post(reverse("login"), {"username": "aline@example.com", "password": self.password})
+        self.assertRedirects(response, reverse("dashboard"))
+
+    def test_suspended_account_gets_clear_message(self):
+        self.user.is_active = False
+        self.user.save()
+        response = self.client.post(reverse("login"), {"username": "aline", "password": self.password})
+        self.assertContains(response, "suspended")
+
+    def test_wrong_password_does_not_reveal_suspension(self):
+        self.user.is_active = False
+        self.user.save()
+        response = self.client.post(reverse("login"), {"username": "aline", "password": "wrong-password"})
+        self.assertNotContains(response, "suspended")
+
+    def test_password_reset_sends_email_link(self):
+        from django.core import mail
+
+        response = self.client.post(reverse("password_reset"), {"email": "aline@example.com"})
+        self.assertRedirects(response, reverse("password_reset_done"))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("/accounts/reset/", mail.outbox[0].body)
+
+    def test_short_password_is_rejected_at_signup(self):
+        response = self.client.post(reverse("signup"), {
+            "username": "new", "first_name": "N", "last_name": "U", "email": "new@example.com",
+            "role": "mentor", "password1": "short", "password2": "short",
+        })
+        self.assertContains(response, "at least 8 characters")
+        self.assertFalse(User.objects.filter(username="new").exists())
+
+    def test_user_can_delete_own_account(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("delete_account"), {"password": self.password})
+        self.assertRedirects(response, reverse("home"))
+        self.assertFalse(User.objects.filter(pk=self.user.pk).exists())
+
+    def test_delete_requires_correct_password(self):
+        self.client.force_login(self.user)
+        self.client.post(reverse("delete_account"), {"password": "nope"})
+        self.assertTrue(User.objects.filter(pk=self.user.pk).exists())
+
+    def test_help_page_is_public(self):
+        response = self.client.get(reverse("help"))
+        self.assertContains(response, "does not accept payments")
+
+    def test_session_expires_after_30_minutes(self):
+        from django.conf import settings
+
+        self.assertEqual(settings.SESSION_COOKIE_AGE, 1800)
+        self.assertTrue(settings.SESSION_SAVE_EVERY_REQUEST)

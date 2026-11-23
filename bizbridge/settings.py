@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "investor_connections",
     "notifications",
     "networking",
+    "adminpanel",
 ]
 
 MIDDLEWARE = [
@@ -145,6 +146,25 @@ SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", not DEBUG)
 SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", not DEBUG)
 CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not DEBUG)
 SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "3600" if not DEBUG else "0"))
+
+AUTHENTICATION_BACKENDS = ["accounts.backends.EmailOrUsernameBackend"]
+
+# Sessions expire after 30 minutes of inactivity (NFR-06).
+SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", "1800"))
+SESSION_SAVE_EVERY_REQUEST = True
+
+# Email for notifications and password reset links (FR-05). Without SMTP settings,
+# emails are written to the server log so the reset flow can still be demonstrated.
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+if EMAIL_HOST:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "BizBridge <no-reply@bizbridge.local>")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"
