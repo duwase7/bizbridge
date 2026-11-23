@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Connections | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">Your network</p>
+        <h1>Connections</h1>
+        <p>Answer connection requests, track the ones you sent and message the people you are connected with.</p>
+    </div>
+
+    <h2 class="section-title">Requests waiting for you ({{ incoming|length }})</h2>
+    {% if incoming %}
+        <div class="request-list">
+            {% for connection in incoming %}
+                <article class="request-card">
+                    <div class="request-card-heading">
+                        <div>
+                            <span class="feature-number">{{ connection.requester.get_role_display }}</span>
+                            <h2><a href="{% url 'person_detail' connection.requester.pk %}">{{ connection.requester.display_name }}</a></h2>
+                            <p class="request-meta">{{ connection.requester.organization|default:connection.requester.business_name|default:"BizBridge member" }} · {{ connection.created_at|date:"j M Y" }}</p>
+                        </div>
+                        <span class="request-status status-pending">Pending</span>
+                    </div>
+                    {% if connection.note %}<p class="request-message">{{ connection.note }}</p>{% endif %}
+                    <div class="request-actions">
+                        <form method="post" action="{% url 'respond_to_connection' connection.pk %}">{% csrf_token %}<input type="hidden" name="decision" value="accepted"><button class="button button-small" type="submit">Accept</button></form>
+                        <form method="post" action="{% url 'respond_to_connection' connection.pk %}">{% csrf_token %}<input type="hidden" name="decision" value="declined"><button class="button button-small button-secondary" type="submit">Decline</button></form>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="results-label">No pending requests.</p>
+    {% endif %}
+
+    <h2 class="section-title">Your connections ({{ accepted|length }})</h2>
+    {% if accepted %}
+        <div class="opportunity-grid">
+            {% for connection in accepted %}
+                {% include "networking/_connection_card.html" with partner=connection.partner %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state"><h2>No connections yet.</h2><p>Search for people and send a connection request.</p><a class="button button-small" href="{% url 'people_directory' %}">Search people</a></div>
+    {% endif %}
+
+    <h2 class="section-title">Requests you sent</h2>
+    {% if outgoing %}
+        <div class="request-list">
+            {% for connection in outgoing %}
+                <article class="request-card">
+                    <div class="request-card-heading">
+                        <div>
+                            <span class="feature-number">{{ connection.receiver.get_role_display }}</span>
+                            <h2>{{ connection.receiver.display_name }}</h2>
+                            <p class="request-meta">Sent {{ connection.created_at|date:"j M Y" }}</p>
+                        </div>
+                        <span class="request-status status-{{ connection.status }}">{{ connection.get_status_display }}</span>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="results-label">You have no outstanding sent requests.</p>
+    {% endif %}
+</section>
+{% endblock %}
