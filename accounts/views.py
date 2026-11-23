@@ -1,15 +1,35 @@
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import ProfileForm, SignUpForm
+from .forms import DeleteAccountForm, ProfileForm, SignUpForm
 from .matching import recommended_opportunities, recommended_people, search_people
 from .models import User
 
 
 def home(request):
     return render(request, "home.html")
+
+
+def help_page(request):
+    return render(request, "help.html")
+
+
+@login_required
+def delete_account(request):
+    """Members can delete their own account and data (NFR-09)."""
+    if request.user.is_superuser:
+        messages.error(request, "Superuser accounts cannot be deleted here.")
+        return redirect("dashboard")
+    form = DeleteAccountForm(request.user, request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, "Your account and personal data have been deleted.")
+        return redirect("home")
+    return render(request, "accounts/delete_account.html", {"form": form})
 
 
 def signup(request):
