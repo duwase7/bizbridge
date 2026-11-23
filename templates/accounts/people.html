@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Search people | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page">
+    <div class="page-heading">
+        <p class="eyebrow">Find your people</p>
+        <h1>{% if user.role == "entrepreneur" %}Search mentors, investors and partners{% else %}Search businesses{% endif %}</h1>
+        <p>Use keywords and filter by role, sector, location and business stage.</p>
+    </div>
+
+    <form class="opportunity-search people-search" method="get" action="{% url 'people_directory' %}">
+        <label class="visually-hidden" for="people-q">Keyword</label>
+        <input id="people-q" type="search" name="q" value="{{ query }}" placeholder="Name, business, expertise...">
+        {% if role_options|length > 1 %}
+            <label class="visually-hidden" for="people-role">Type</label>
+            <select id="people-role" name="role">
+                <option value="">All types</option>
+                {% for value, label in role_options %}
+                    <option value="{{ value }}" {% if selected_role == value %}selected{% endif %}>{{ label }}s</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        <label class="visually-hidden" for="people-sector">Sector</label>
+        <input id="people-sector" type="text" name="sector" value="{{ sector }}" placeholder="Sector">
+        <label class="visually-hidden" for="people-location">Location</label>
+        <input id="people-location" type="text" name="location" value="{{ location }}" placeholder="Location">
+        <label class="visually-hidden" for="people-stage">Stage</label>
+        <select id="people-stage" name="stage">
+            <option value="">Any stage</option>
+            {% for option in stages %}<option value="{{ option }}" {% if stage == option %}selected{% endif %}>{{ option }}</option>{% endfor %}
+        </select>
+        <button class="button" type="submit">Search</button>
+        {% if has_filters %}<a class="clear-filters" href="{% url 'people_directory' %}">Clear filters</a>{% endif %}
+    </form>
+
+    <p class="results-label">{{ people|length }} result{{ people|length|pluralize }}</p>
+    {% if people %}
+        <div class="opportunity-grid">
+            {% for person in people %}
+                {% include "accounts/_person_card.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>No one matches those filters yet.</h2>
+            <p>Try a broader keyword, or clear a filter.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

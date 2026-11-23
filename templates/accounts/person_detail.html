@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ person.display_name }} | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page detail-page">
+    <a class="text-link" href="{% url 'people_directory' %}">← Back to search</a>
+    <article class="detail-card">
+        <span class="feature-number">{{ person.get_role_display }}</span>
+        <h1>{{ person.display_name }} {% if person.is_verified %}<span class="verified-badge" title="Verified by BizBridge">✔ Verified</span>{% endif %}</h1>
+        <p class="opportunity-provider">{{ person.organization|default:"" }}{% if person.organization and person.location %} · {% endif %}{{ person.location|default:"" }}</p>
+        {% if person.bio %}<div class="detail-body">{{ person.bio|linebreaks }}</div>{% endif %}
+
+        <div class="profile-details">
+            {% if person.role == "entrepreneur" %}
+                <p><strong>Business</strong><span>{{ person.business_name|default:"Not added yet" }}</span></p>
+                <p><strong>Sector</strong><span>{{ person.business_sector|default:"Not added yet" }}</span></p>
+                <p><strong>Stage</strong><span>{{ person.business_stage|default:"Not added yet" }}</span></p>
+            {% elif person.role == "mentor" %}
+                <p><strong>Expertise</strong><span>{{ person.mentor_expertise|default:"Not added yet" }}</span></p>
+                <p><strong>Availability</strong><span>{{ person.mentor_availability|default:"Not added yet" }}</span></p>
+                <p><strong>Sectors</strong><span>{{ person.interest_sectors|default:"Any" }}</span></p>
+            {% elif person.role == "investor" %}
+                <p><strong>Investor type</strong><span>{{ person.investor_type|default:"Not added yet" }}</span></p>
+                <p><strong>Sectors</strong><span>{{ person.interest_sectors|default:"Any" }}</span></p>
+                {% if person.website %}<p><strong>Website</strong><span><a href="{{ person.website }}" target="_blank" rel="noopener noreferrer">{{ person.website }}</a></span></p>{% endif %}
+            {% endif %}
+        </div>
+        {% if person.role == "entrepreneur" and person.business_description %}<div class="detail-body">{{ person.business_description|linebreaks }}</div>{% endif %}
+
+        {% if person != user %}
+        <div class="dashboard-actions">
+            {% block person_actions %}
+            {% if user.role == "entrepreneur" and person.role == "mentor" %}
+                {% if mentorship_request %}
+                    <span class="request-status status-{{ mentorship_request.status }}">Mentorship: {{ mentorship_request.get_status_display }}</span>
+                {% endif %}
+                {% if not mentorship_request or mentorship_request.status == "declined" %}
+                    <a class="button button-small" href="{% url 'request_mentorship' person.pk %}">Request mentorship</a>
+                {% endif %}
+            {% endif %}
+            {% if user.role == "entrepreneur" and person.role == "investor" %}
+                {% if investor_request %}
+                    <span class="request-status status-{{ investor_request.status }}">Investor request: {{ investor_request.get_status_display }}</span>
+                {% endif %}
+                {% if not investor_request or investor_request.status == "declined" %}
+                    <a class="button button-small" href="{% url 'request_investor_connection' person.pk %}">Introduce my business</a>
+                {% endif %}
+            {% endif %}
+            {% endblock %}
+        </div>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}
