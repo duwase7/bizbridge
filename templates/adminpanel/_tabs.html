@@ -1,0 +1,5 @@
+<nav class="admin-tabs" aria-label="Administrator sections">
+    <a href="{% url 'admin_dashboard' %}" {% if tab == "reports" %}class="active"{% endif %}>Activity &amp; reports</a>
+    <a href="{% url 'admin_users' %}" {% if tab == "users" %}class="active"{% endif %}>User accounts</a>
+    <a href="{% url 'admin_opportunities' %}" {% if tab == "opportunities" %}class="active"{% endif %}>Opportunities</a>
+</nav>
