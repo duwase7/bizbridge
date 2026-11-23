@@ -7,7 +7,12 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.urls import reverse
 
+from datetime import timedelta
+
+from django.utils import timezone
+
 from investor_connections.models import InvestorConnectionRequest
+from networking.models import Connection, Message
 from mentorships.models import MentorshipRequest
 from notifications.models import Notification
 from opportunities.models import Opportunity
@@ -88,6 +93,8 @@ class Command(BaseCommand):
                     "Business strategy, customer discovery, go-to-market"
                 ),
                 "mentor_availability": "Weekday evenings",
+                "interest_sectors": "Agriculture, Retail, Fintech",
+                "is_verified": True,
             },
             "investor": {
                 "email": f"{prefix}_investor@example.test",
@@ -101,6 +108,29 @@ class Command(BaseCommand):
                     "agriculture and climate solutions."
                 ),
                 "investor_type": "Impact investor",
+                "interest_sectors": "Agriculture, Climate, Energy",
+                "website": "https://example.org",
+                "is_verified": True,
+            },
+            "partner": {
+                "email": f"{prefix}_partner@example.test",
+                "first_name": "Jean",
+                "last_name": "Habimana",
+                "role": User.Role.ENTREPRENEUR,
+                "organization": "Demo AgroLink Logistics",
+                "location": "Kigali, Rwanda",
+                "bio": "Runs a small logistics business moving produce from farms to Kigali markets.",
+                "business_name": "Demo AgroLink Logistics",
+                "business_sector": "Agriculture",
+                "business_stage": "Early stage",
+                "business_description": "Sample cold-chain delivery start-up looking for farm partners.",
+            },
+            "admin": {
+                "email": f"{prefix}_admin@example.test",
+                "first_name": "BizBridge",
+                "last_name": "Admin",
+                "role": User.Role.ENTREPRENEUR,
+                "is_staff": True,
             },
         }
 
@@ -113,11 +143,15 @@ class Command(BaseCommand):
             # an account with a different role or an administrative account.
             for key, fields in specifications.items():
                 existing = User.objects.filter(username=usernames[key]).first()
-                if existing and existing.role != fields["role"]:
+                if existing and key == "admin" and (existing.is_superuser or not existing.is_staff):
+                    raise CommandError(
+                        f"Username '{usernames[key]}' exists but is not a demo administrator."
+                    )
+                if existing and key != "admin" and existing.role != fields["role"]:
                     raise CommandError(
                         f"Username '{usernames[key]}' already belongs to a different role."
                     )
-                if existing and (existing.is_staff or existing.is_superuser):
+                if existing and key != "admin" and (existing.is_staff or existing.is_superuser):
                     raise CommandError(
                         f"Username '{usernames[key]}' is an administrative account; "
                         "choose another --prefix."
@@ -141,6 +175,8 @@ class Command(BaseCommand):
             founder = users["founder"]
             mentor = users["mentor"]
             investor = users["investor"]
+            partner = users["partner"]
+            today = timezone.localdate()
 
             demo_opportunities = [
                 {
@@ -148,6 +184,7 @@ class Command(BaseCommand):
                     "category": Opportunity.Category.FUNDING,
                     "sector": "Agriculture",
                     "location": "Rwanda",
+                    "deadline": today + timedelta(days=45),
                     "description": (
                         "Sample funding opportunity for demonstrating the BizBridge "
                         "discovery workflow. Replace with verified programme details "
@@ -169,10 +206,30 @@ class Command(BaseCommand):
                     "category": Opportunity.Category.COMPETITION,
                     "sector": "All sectors",
                     "location": "Rwanda",
+                    "deadline": today + timedelta(days=20),
                     "description": (
                         "Sample pitch competition for demonstrating the opportunity "
                         "directory. This is not an open application call."
                     ),
+                },
+                {
+                    "title": "[DEMO] Kigali Climate Incubator Cohort",
+                    "category": Opportunity.Category.INCUBATOR,
+                    "sector": "Agriculture, Climate",
+                    "location": "Kigali, Rwanda",
+                    "deadline": today + timedelta(days=60),
+                    "description": (
+                        "Sample six-month incubator programme used to demonstrate "
+                        "recommendations. This is not a live programme."
+                    ),
+                },
+                {
+                    "title": "[DEMO] Expired Seed Fund (hidden)",
+                    "category": Opportunity.Category.FUNDING,
+                    "sector": "All sectors",
+                    "location": "Rwanda",
+                    "deadline": today - timedelta(days=3),
+                    "description": "Sample expired opportunity. It should not appear to members.",
                 },
             ]
 
@@ -211,6 +268,25 @@ class Command(BaseCommand):
                 },
             )
 
+            connection = Connection.between(founder, partner)
+            if connection is None:
+                connection = Connection.objects.create(
+                    requester=founder,
+                    receiver=partner,
+                    note="Let's explore moving GreenGrow produce with AgroLink.",
+                    status=Connection.Status.ACCEPTED,
+                )
+                Message.objects.create(
+                    connection=connection,
+                    sender=founder,
+                    content="Hi Jean, could AgroLink collect produce from our farmer groups in Bugesera?",
+                )
+                Message.objects.create(
+                    connection=connection,
+                    sender=partner,
+                    content="Yes! We run a route there every Tuesday. Let's plan a pilot.",
+                )
+
             Notification.objects.get_or_create(
                 recipient=mentor,
                 actor=founder,
@@ -229,12 +305,13 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("BizBridge demo data is ready."))
         self.stdout.write("Demo accounts:")
         for key in specifications:
-            self.stdout.write(f"  {usernames[key]} ({specifications[key]['role']})")
+            role = "administrator" if key == "admin" else specifications[key]["role"]
+            self.stdout.write(f"  {usernames[key]} ({role})")
         self.stdout.write(
             "The supplied password is not printed. Use --reset-passwords only "
             "when you intentionally want to change existing demo account passwords."
         )
         self.stdout.write(
-            "Created or reused 3 sample opportunities, 1 mentorship request, "
-            "1 investor request and 2 notifications."
+            "Created or reused 5 sample opportunities (1 expired), 1 mentorship request, "
+            "1 investor request, 1 accepted connection with messages and 2 notifications."
         )
