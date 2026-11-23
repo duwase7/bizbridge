@@ -21,6 +21,7 @@
         {% endif %}
         <button class="button button-full" type="submit">{{ submit_label }}</button>
     </form>
+    {% if show_forgot %}<p class="form-switch"><a href="{% url 'password_reset' %}">Forgot your password?</a></p>{% endif %}
     <p class="form-switch">{{ switch_text }} <a href="{{ switch_url }}">{{ switch_label }}</a></p>
 </section>
 {% endblock %}
