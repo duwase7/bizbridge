@@ -55,3 +55,8 @@ a.notification-card{display:flex}
 .admin-actions form{display:flex;flex-wrap:wrap;gap:6px}.admin-actions{display:flex;flex-wrap:wrap;gap:6px}.admin-actions .button-small{padding:6px 11px;font-size:.8rem}
 .button-danger{background:#b3261e}.button-danger:hover{background:#8c1d18}
 @media(max-width:800px){.admin-columns{grid-template-columns:1fr}}
+
+/* Help, safety and account pages */
+.help-content h2{font-family:Manrope,sans-serif;margin-top:26px}.help-content details{border-bottom:1px solid var(--line);padding:10px 0}.help-content summary{cursor:pointer;font-weight:700}
+.footer-warning{max-width:640px;margin:8px auto;font-size:.85rem;color:#8a5a12}.danger-link{color:#b3261e;font-weight:600}
+.site-footer .footer-warning{margin:8px auto}.detail-card>.section-title:first-child{margin-top:0}

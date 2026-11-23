@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Help &amp; FAQ | BizBridge{% endblock %}
+{% block content %}
+<section class="opportunities-page detail-page">
+    <div class="page-heading">
+        <p class="eyebrow">Help centre</p>
+        <h1>How to use BizBridge</h1>
+        <p>Quick answers for entrepreneurs, mentors, investors and administrators.</p>
+    </div>
+
+    <div class="detail-card help-content">
+        <h2>Quick start</h2>
+        <ol>
+            <li><strong>Register</strong> with your name, email, a password of at least 8 characters and your role (Entrepreneur, Mentor or Investor).</li>
+            <li><strong>Complete your profile.</strong> Entrepreneurs add business name, sector, stage and location. Mentors add expertise, availability and sectors. Investors add organisation, investor type, sectors and website.</li>
+            <li><strong>Check your recommendations</strong> on the dashboard. They are based on matching sector, stage and location.</li>
+            <li><strong>Search</strong> for people and opportunities and filter by sector, location, stage and type.</li>
+            <li><strong>Connect.</strong> Send a connection request, a mentorship request or an investor introduction. Once it is accepted you can send messages.</li>
+        </ol>
+
+        <h2>Frequently asked questions</h2>
+        <details><summary>Who can I search for?</summary><p>Entrepreneurs can search for mentors, investors and other entrepreneurs (potential partners). Mentors and investors can search for entrepreneurs and their businesses.</p></details>
+        <details><summary>Why can't I message someone?</summary><p>Messaging opens only after a connection, mentorship or investor request has been accepted. This protects members from unwanted messages.</p></details>
+        <details><summary>What does the verified badge mean?</summary><p>An administrator has reviewed that mentor's or investor's profile. Even so, always do your own checks before you share money or private information.</p></details>
+        <details><summary>Why did an opportunity disappear?</summary><p>Opportunities are hidden automatically after their deadline has passed.</p></details>
+        <details><summary>I forgot my password.</summary><p>Use <a class="text-link" href="{% url 'password_reset' %}">Forgot your password?</a> on the login page. We email you a one-time link.</p></details>
+        <details><summary>How do I delete my account?</summary><p>Go to <em>Edit profile → Delete my account</em>. Your profile, requests and messages are permanently removed, as required by Rwanda's data protection law (Law No. 058/2021).</p></details>
+        <details><summary>My account says it is suspended.</summary><p>An administrator suspended the account, possibly after a complaint. Contact the BizBridge team so they can review it and reactivate the account.</p></details>
+
+        <h2>Role guides</h2>
+        <p><strong>Entrepreneurs:</strong> keep your sector and stage up to date to get better matches. Request mentorship with a clear topic.</p>
+        <p><strong>Mentors:</strong> answer mentorship and connection requests from <em>Mentorship requests</em> and <em>Connections</em>.</p>
+        <p><strong>Investors:</strong> search businesses by sector, location and stage, then send connection requests or answer introductions.</p>
+        <p><strong>Administrators:</strong> use the <em>Admin</em> console to verify mentors and investors, suspend or reactivate accounts, publish opportunities and download activity reports.</p>
+
+        <p class="safety-note"><strong>Stay safe:</strong> BizBridge does not accept payments and never charges you to apply for an opportunity. Check people and organisations carefully before you exchange money or private information.</p>
+    </div>
+</section>
+{% endblock %}
