@@ -32,6 +32,8 @@ def signup(request):
 @login_required
 def dashboard(request):
     user = request.user
+    if user.is_staff:
+        return redirect("admin_dashboard")
     recommendation_roles = {
         User.Role.ENTREPRENEUR: (User.Role.MENTOR, User.Role.INVESTOR, User.Role.ENTREPRENEUR),
         User.Role.MENTOR: (User.Role.ENTREPRENEUR,),
