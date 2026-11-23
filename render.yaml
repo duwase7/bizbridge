@@ -27,3 +27,5 @@ services:
         value: ".onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
         value: "https://*.onrender.com"
+      - key: DEMO_PASSWORD
+        sync: false
