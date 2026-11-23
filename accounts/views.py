@@ -124,7 +124,14 @@ def relationship_context(viewer, person):
     from investor_connections.models import InvestorConnectionRequest
     from mentorships.models import MentorshipRequest
 
-    context = {}
+    from networking.models import Connection
+
+    connection = Connection.between(viewer, person)
+    context = {
+        "connection": connection,
+        "can_connect": person.role in searchable_roles_for(viewer)
+        and (connection is None or connection.status == Connection.Status.DECLINED),
+    }
     if viewer.role == User.Role.ENTREPRENEUR and person.role == User.Role.MENTOR:
         context["mentorship_request"] = MentorshipRequest.objects.filter(
             entrepreneur=viewer, mentor=person

@@ -45,6 +45,19 @@
                     <a class="button button-small" href="{% url 'request_investor_connection' person.pk %}">Introduce my business</a>
                 {% endif %}
             {% endif %}
+            {% if connection and connection.status == "accepted" %}
+                <span class="request-status status-accepted">Connected</span>
+                <a class="button button-small" href="{% url 'conversation' connection.pk %}">Message</a>
+            {% elif connection and connection.status == "pending" %}
+                <span class="request-status status-pending">Connection request pending</span>
+            {% elif can_connect %}
+                <form method="post" action="{% url 'send_connection_request' person.pk %}" class="connect-form">
+                    {% csrf_token %}
+                    <label class="visually-hidden" for="connect-note">Note</label>
+                    <input id="connect-note" type="text" name="note" maxlength="500" placeholder="Optional note">
+                    <button class="button button-small button-secondary" type="submit">Send connection request</button>
+                </form>
+            {% endif %}
             {% endblock %}
         </div>
         {% endif %}
