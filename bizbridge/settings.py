@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "investor_connections",
     "notifications",
     "networking",
+    "adminpanel",
 ]
 
 MIDDLEWARE = [
