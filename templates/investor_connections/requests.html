@@ -7,6 +7,7 @@
         <h1>{% if is_investor %}Investor connection requests{% else %}My investor requests{% endif %}</h1>
         <p>{% if is_investor %}Review introductions from entrepreneurs and decide whether to continue the conversation.{% else %}Track the status of the introductions you have sent to investors.{% endif %}</p>
     </div>
+    {% include "networking/_tabs.html" with tab="investor" %}
 
     {% if connection_requests %}
         <div class="request-list">
