@@ -1,0 +1,9 @@
+<nav class="admin-tabs" aria-label="Network sections">
+    <a href="{% url 'connection_list' %}" {% if tab == "connections" %}class="active"{% endif %}>Connections</a>
+    {% if user.role == "entrepreneur" or user.role == "mentor" %}
+        <a href="{% url 'mentorship_requests' %}" {% if tab == "mentorship" %}class="active"{% endif %}>Mentorship requests</a>
+    {% endif %}
+    {% if user.role == "entrepreneur" or user.role == "investor" %}
+        <a href="{% url 'investor_connection_requests' %}" {% if tab == "investor" %}class="active"{% endif %}>Investor requests</a>
+    {% endif %}
+</nav>
