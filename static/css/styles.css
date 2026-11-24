@@ -60,3 +60,29 @@ a.notification-card{display:flex}
 .help-content h2{font-family:Manrope,sans-serif;margin-top:26px}.help-content details{border-bottom:1px solid var(--line);padding:10px 0}.help-content summary{cursor:pointer;font-weight:700}
 .footer-warning{max-width:640px;margin:8px auto;font-size:.85rem;color:#8a5a12}.danger-link{color:#b3261e;font-weight:600}
 .site-footer .footer-warning{margin:8px auto}.detail-card>.section-title:first-child{margin-top:0}
+
+/* Motion and illustrations */
+.js-anim .reveal,.js-anim .opportunity-card,.js-anim .request-card,.js-anim .notification-card,.js-anim .stat-tile,.js-anim .detail-card,.js-anim .dashboard-card{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.js-anim .is-visible{opacity:1!important;transform:none!important}
+.gradient-text{background:linear-gradient(90deg,#176b4b,#3fae7a,#d9822b,#176b4b);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 8s linear infinite}
+@keyframes shine{to{background-position:300% 0}}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -10px}}
+@keyframes spin-slow{to{rotate:360deg}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #69a98288}100%{box-shadow:0 0 0 12px #69a98200}}
+.card-top{animation:float 5s ease-in-out infinite}.card-left{animation:float 6s ease-in-out .8s infinite}.card-right{animation:float 5.5s ease-in-out 1.6s infinite}.card-center{animation:float 7s ease-in-out .4s infinite}
+.orbit-one{animation:spin-slow 60s linear infinite}.orbit-two{animation:spin-slow 80s linear reverse infinite}
+.status-dot{animation:pulse 1.8s ease-out infinite}
+.feature-card,.opportunity-card,.role-card,.stat-tile{transition:transform .25s ease,box-shadow .25s ease,opacity .6s ease}
+.feature-card:hover,.opportunity-card:hover,.role-card:hover,.stat-tile:hover{transform:translateY(-5px)!important;box-shadow:0 18px 40px #17251f14}
+.feature-icon{width:58px;height:58px;margin-bottom:12px}
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:30px 9%;background:var(--green);color:white;text-align:center}.stat strong{display:block;font-family:Manrope,sans-serif;font-size:2.4rem;line-height:1.1}.stat span{opacity:.85;font-size:.9rem}
+.how-section{padding:70px 9%;text-align:center;background:white}.how-section h2,.roles-section h2{font-family:Manrope,sans-serif;font-size:2rem;letter-spacing:-.03em}
+.steps{list-style:none;padding:0;margin:40px 0 0;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative}.steps:before{content:"";position:absolute;top:24px;left:12%;right:12%;height:3px;background:linear-gradient(90deg,var(--mint),var(--green),var(--mint))}
+.step{position:relative}.step-dot{position:relative;z-index:1;display:inline-grid;place-items:center;width:50px;height:50px;border-radius:50%;background:var(--green);color:white;font-weight:800;font-size:1.1rem;box-shadow:0 0 0 7px var(--mint)}.step h3{margin:16px 0 4px;font-family:Manrope,sans-serif}.step p{margin:0;color:var(--muted)}
+.roles-section{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:60px 9%}.role-card{padding:30px;border-radius:16px;background:white;border:1px solid var(--line)}.role-emoji{display:inline-block;font-size:2.2rem;animation:float 4s ease-in-out infinite}.role-card h3{font-family:Manrope,sans-serif;margin:10px 0 6px}.role-card p{margin:0;color:var(--muted)}
+.cta-band{margin:0 9% 70px;padding:50px 30px;border-radius:22px;text-align:center;color:white;background:linear-gradient(135deg,#10543a,#176b4b 55%,#2f8f63)}.cta-band h2{font-family:Manrope,sans-serif;font-size:2rem;margin:10px 0 6px}.cta-band p{opacity:.9;margin:0 0 22px}
+.cta-bridge{width:min(320px,80%);height:auto}.bridge-traveller{offset-path:path("M10 100 Q160 -10 310 100");animation:cross 5s ease-in-out infinite}
+@keyframes cross{0%{offset-distance:0%}50%{offset-distance:100%}100%{offset-distance:0%}}
+.button-light{background:white;color:var(--green)}.button-light:hover{background:#eaf4ed}
+@media(max-width:850px){.stats-strip{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr 1fr}.steps:before{display:none}.roles-section{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

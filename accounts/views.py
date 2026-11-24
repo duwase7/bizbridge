@@ -9,7 +9,17 @@ from .models import User
 
 
 def home(request):
-    return render(request, "home.html")
+    from networking.models import Connection
+    from opportunities.models import Opportunity
+
+    members = User.objects.filter(is_active=True, is_staff=False)
+    stats = {
+        "entrepreneurs": members.filter(role=User.Role.ENTREPRENEUR).count(),
+        "supporters": members.filter(role__in=(User.Role.MENTOR, User.Role.INVESTOR)).count(),
+        "opportunities": Opportunity.visible().count(),
+        "connections": Connection.objects.filter(status=Connection.Status.ACCEPTED).count(),
+    }
+    return render(request, "home.html", {"stats": stats})
 
 
 def help_page(request):
