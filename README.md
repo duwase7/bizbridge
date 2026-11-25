@@ -3,7 +3,7 @@
 BizBridge is a website that helps entrepreneurs in Rwanda find mentors, investors, business partners and opportunities (funding, training, competitions and incubators) in one place.
 
 - **Live website:** https://bizbridge-coz9.onrender.com
-- **SRS and system design:** _add your SRS link here_
+- **SRS and system design:** https://docs.google.com/document/d/1Q_jqn3WKdhQG1oTMVPpjBQHuCXWz67PNkS0Zy8zrcmc/edit?usp=sharing  
 - **GitHub repository:** https://github.com/duwase7/bizbridge
 
 ## The problem
